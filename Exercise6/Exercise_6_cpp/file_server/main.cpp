@@ -15,14 +15,7 @@
 
 using namespace std;
 
-void error(const char *msg);
 void sendFile(string fileName, long fileSize, int outToClient);
-
-void error(const char *msg)
-{
-	perror(msg);
-	exit(1);
-}
 
 /**
  * main starter serveren og venter på en forbindelse fra en klient
@@ -39,7 +32,6 @@ void error(const char *msg)
 int main(int argc, char *argv[])
 {
     // TO DO Your own code
-    return 0;
 }
 
 /**
@@ -53,3 +45,4 @@ void sendFile(string fileName, long fileSize, int outToClient)
 {
     // TO DO Your own code
 }
+
