@@ -16,7 +16,9 @@
 
 using namespace std;
 
-void receiveFile(string fileName, int socketfd);
+char buffer[BUFSIZE];
+
+void receiveFile(int socketfd);
 
 int main(int argc, char *argv[])
 {
@@ -26,7 +28,7 @@ int main(int argc, char *argv[])
   int sockfd, portno, n;
   struct sockaddr_in serv_addr;
   struct hostent *server;
-  char buffer[BUFSIZE];
+  //char buffer[BUFSIZE];
 
   if (argc < 3)
 	    error( "ERROR usage: ""hostname"",  ""port""");
@@ -42,21 +44,20 @@ int main(int argc, char *argv[])
 
 	printf("Server at: %s, port: %s\n",argv[1], argv[2]);
 
-
   // Write to server
   printf("Enter name of file to request (directory optional):\n");
-  fgets(buffer,sizeof(buffer),stdin);
+  //fgets(buffer,sizeof(buffer),stdin);
+  stdin = "text";
+
   // ?Programmet stopper her?
   writeTextTCP(sockfd,buffer);
 
-  // Read filesize
-  printf("test2");
-  if ("0"==readTextTCP(buffer,20,sockfd)) // med \n?
-    {
-      error("File does not exist\n. Exiting.");
-    }
-  else
-    error("Test");
+  // Receive file
+  receiveFile(sockfd);
+
+  printf("Closing client...\n\n");
+  close(sockfd); // inside receiveFile()
+  return 0;
 }
 
 /**
@@ -69,7 +70,28 @@ int main(int argc, char *argv[])
  * @param fileName Det fulde filnavn incl. evt. stinavn
  * @param sockfd Stream for at skrive til/læse fra serveren
  */
-void receiveFile(string fileName, int sockfd)
+ //void receiveFile(string fileName, int sockfd)
+void receiveFile(int sockfd)
 {
-	// TO DO Your own code
+	//Modtag filstørrelse
+  long fileSize = getFileSizeTCP(sockfd);
+  if (0==fileSize)
+    {
+      error("File does not exist\n. Exiting.");
+    }
+
+  //*** Write file demo ***
+  FILE * fp;
+  fp = fopen(extractFileName(buffer), "wb");   // write binary (?)
+
+  for (size_t i = fileSize; i != 0; i - 1000) // (?)
+  {
+    readTextTCP(buffer, 1000,sockfd); //(?)
+    fwrite(buffer, 1000, 20, fp); // 20 (?)
+
+    if (i <= 1000) // bad modulus replacement
+      i = 1000;
+  }
+  // Receive "\n" (?)
+  fclose(fp);
 }
