@@ -13,100 +13,58 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include "iknlib.h"
+
 using namespace std;
 
-//#define BUFSIZE 1000
-#define portno 9000
+char buffer[BUFSIZE];
 
-void write_file(int sockfd){
-  int n;
-  FILE *fp;
-  char *filename = "recv.txt";
-  char buffer[BUFSIZE];
-
-  fp = fopen(filename, "w");
-  while (1) {
-    n = recv(sockfd, buffer, BUFSIZE, 0);
-    if (n <= 0){
-      break;
-      return;
-    }
-    fprintf(fp, "%s", buffer);
-    bzero(buffer, BUFSIZE);
-  }
-  return;
-}
-
-void error(const char *msg)
-{
-	//perror(msg); // prints Success?
-  printf(msg,1);
-	exit(1);
-}
-
+void receiveFile(int socketfd);
 
 int main(int argc, char *argv[])
 {
-  // TO DO Your own code
-  int sockfd,n,new_sock;
+	// TO DO Your own code
+  printf("Starting client...\n");
+
+
+  int sockfd, portno, n;
   struct sockaddr_in serv_addr;
   struct hostent *server;
-  socklen_t addr_size;
-  char buffer[BUFSIZE];
+  //char buffer[BUFSIZE];
 
-  // Check usage
-  if (argc != 2)
-      error("ERROR: \"Usage: <hostname>.\" \n");
+  if (argc < 3)
+	    error( "ERROR usage: ""hostname"",  ""port""");
 
-  // Check socket availability
-  sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  if (sockfd < 0)
-    error("ERROR: \"While opening socket.\" \n");
+	portno = atoi(argv[2]);
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sockfd < 0)
+	    error("ERROR opening socket");
 
-  // Check server
-  server = gethostbyname(argv[1]);
-  if (server == NULL)
-    error("ERROR: \"No such host.\" \n");
-
-  // Success
-  printf("Starting client on port %d.\n",portno);
-  printf("Server specified: %s, port: %d\n",argv[1], portno);
+	server = gethostbyname(argv[1]);
+	if (server == NULL)
+	    error("ERROR no such host");
 
 
-  // Check connectivity
-  printf("Trying to connect...\n");
+  printf("Server at: %s, port: %s\n",argv[1], argv[2]);
+
+  // Write to server
+  printf("Enter name of file to request (directory optional):\n");
+  fgets(buffer,sizeof(buffer),stdin);
+
+  printf("Connect...\n");
 	bzero((char *) &serv_addr, sizeof(serv_addr));
 	serv_addr.sin_family = AF_INET;
 	bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
 	serv_addr.sin_port = htons(portno);
 	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0)
-	    error("ERROR: \"Cannot establish connection.\" \n");
+	    error("ERROR connecting");
 
-  // Send request for file
-  printf("Enter name of file to request (directory optional):\n");
-  fgets(buffer,sizeof(buffer),stdin);
-  n = write(sockfd,buffer,strlen(buffer));  // socket write
-  if (n < 0)
-      error("ERROR: \"While writing to socket.\" \n");
+  writeTextTCP(sockfd,buffer);
 
-  // Read response
-  bzero(buffer,sizeof(buffer));
-  n = read(sockfd,buffer,sizeof(buffer));  // socket read
+  // Receive file
+  receiveFile(sockfd);
 
-  // Check response
-  printf("Size of file %s MB.\n",buffer);
-  if (n) // File does not exist
-      error("ERROR: \"File does not exist. Exiting...\" \n");
-
-  // Write data
-  addr_size = sizeof(serv_addr);
-  new_sock = accept(sockfd, (struct sockaddr*)&serv_addr, &addr_size);
-  write_file(new_sock);
-  printf("[+]Data written in the file successfully.\n");
-
-  // Ending: close socket
   printf("Closing client...\n\n");
-  close(sockfd);
+  close(sockfd); // inside receiveFile()
   return 0;
 }
 
@@ -120,7 +78,28 @@ int main(int argc, char *argv[])
  * @param fileName Det fulde filnavn incl. evt. stinavn
  * @param sockfd Stream for at skrive til/læse fra serveren
  */
-void receiveFile(string fileName, int sockfd)
+ //void receiveFile(string fileName, int sockfd)
+void receiveFile(int sockfd)
 {
-	// TO DO Your own code
+	//Modtag filstørrelse
+  long fileSize = getFileSizeTCP(sockfd);
+  if (0==fileSize)
+    {
+      error("File does not exist\n. Exiting.");
+    }
+
+  //*** Write file demo ***
+  FILE * fp;
+  fp = fopen(extractFileName(buffer), "wb");   // write binary (?)
+
+  for (size_t i = fileSize; i != 0; i - 1000) // (?)
+  {
+    readTextTCP(buffer, 1000,sockfd); //(?)
+    fwrite(buffer, 1000, 20, fp); // 20 (?)
+
+    if (i <= 1000) // bad modulus replacement
+      i = 1000;
+  }
+  // Receive "\n" (?)
+  fclose(fp);
 }

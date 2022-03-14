@@ -17,7 +17,6 @@ using namespace std;
 
 
 
-
 void sendFile(string fileName, long fileSize, int outToClient);
 
 /**
@@ -34,6 +33,7 @@ void sendFile(string fileName, long fileSize, int outToClient);
  */
 int main(int argc, char *argv[])
 {
+
     int sockfd, newsockfd, portno;
     socklen_t clilen;
     char buffer[BUFSIZE];
@@ -80,12 +80,6 @@ int main(int argc, char *argv[])
     string filename = extractFileName(buffer);
     //Nu tjekkes om filen findes. 
     check_File_Exists(filename);
-
-
-
-
-
-
 
 
 }
