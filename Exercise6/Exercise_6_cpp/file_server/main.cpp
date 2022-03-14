@@ -15,14 +15,10 @@
 
 using namespace std;
 
-void error(const char *msg);
-void sendFile(string fileName, long fileSize, int outToClient);
 
-void error(const char *msg)
-{
-	perror(msg);
-	exit(1);
-}
+
+
+void sendFile(string fileName, long fileSize, int outToClient);
 
 /**
  * main starter serveren og venter på en forbindelse fra en klient
@@ -38,8 +34,60 @@ void error(const char *msg)
  */
 int main(int argc, char *argv[])
 {
-    // TO DO Your own code
-    return 0;
+    int sockfd, newsockfd, portno;
+    socklen_t clilen;
+    char buffer[BUFSIZE];
+    struct sockaddr_in serv_addr, cli_addr;
+    int n;
+    if (argc < 3) 
+    {
+        error("ERROR, no port provided");
+    }
+
+    //creating socket now.
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0)
+    {
+        error("Error opening socket");
+    }
+    bzero((char *) &serv_addr, sizeof(serv_addr));
+    portno = atoi(argv[1]);
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
+    serv_addr.sin_port = htons(portno);
+
+
+    //time for checking bind.
+    if (bind(sockfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr)) < 0);
+        error("Error on binding");
+
+
+    // time for listen.
+    listen(sockfd,5);
+
+
+    clilen = sizeof(cli_addr);
+    newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+    if (newsockfd < 0)
+        error("ERROR on accept");
+
+    bzero(buffer, 1000);
+
+    //nu læses filnavnet fra clienten.
+    readTextTCP(buffer, 1000, newsockfd);
+
+
+    string filename = extractFileName(buffer);
+    //Nu tjekkes om filen findes. 
+    check_File_Exists(filename);
+
+
+
+
+
+
+
+
 }
 
 /**
@@ -53,3 +101,4 @@ void sendFile(string fileName, long fileSize, int outToClient)
 {
     // TO DO Your own code
 }
+
