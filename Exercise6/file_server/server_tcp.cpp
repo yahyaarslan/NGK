@@ -20,14 +20,6 @@ using namespace std;
 void sendFile(const char *fileName, long fileSize, int outToClient);
 void send_file(const char *fileName, int sockfd);
 /**
- * main starter serveren og venter på en forbindelse fra en klient
- * Læser filnavn som kommer fra klienten.
- * Undersøger om filens findes på serveren.
- * Sender filstørrelsen tilbage til klienten (0 = Filens findes ikke)
- * Hvis filen findes sendes den nu til klienten
- *
- * HUSK at lukke forbindelsen til klienten og filen når denne er sendt til klienten
- *
  * @throws IOException
  *
  */
@@ -47,7 +39,7 @@ int main(int argc, char *argv[])
     if (sockfd < 0)
         error("Error opening socket");
 
-    printf("Binding...\n");
+    printf("Binding...\n"); //Binding
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
@@ -65,39 +57,34 @@ int main(int argc, char *argv[])
     for(;;)
     {
         printf("Accept...\n");
-        newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+        newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen); //Accepting connection
         if (newsockfd < 0)
             error("ERROR on accept");
         else
             printf("Accepted\n");
 
-        bzero(buffer, 1000);
+        bzero(buffer, 1000); //Cleaner bufferen så den er klar til ny data. 
 
         //nu læses filnavnet fra clienten.
         readTextTCP(buffer, 1000, newsockfd);
 
         const char *filename = extractFileName(buffer);
         long fileSize = check_File_Exists(filename);
-
-        //if(fileSize)
-
-            printf("File exists. Sending file.\n");
-          //  writeTextTCP(newsockfd,buffer);
-          //  send(sockfd, "%ld",fileSize, sizeof(fileSize), 0);
-            send_file(filename, newsockfd);
-
-
-        //else
-
-        //  printf("File does not exist.\n");
-        //  writeTextTCP(newsockfd,buffer);
-
-
+        
+        if (fileSize > 0)
+        {
+        printf("File exists. Sending file.\n");
+        send_file(filename, newsockfd);
+        }
+        else
+        {
+          error("File not found");
+        }
         printf("Client served.\n");
         close(newsockfd);
     }
 
-    close(sockfd);
+    close(sockfd); //Close the connection. 
     return 0;
 }
 
@@ -105,54 +92,30 @@ int main(int argc, char *argv[])
  * Sender filen som har navnet fileName til klienten
  *
  * @param fileName Filnavn som skal sendes til klienten
- * @param fileSize Størrelsen på filen, 0 hvis den ikke findes
- * @param outToClient Stream som der skrives til socket
+ * @param sockfd Stream som der skrives til socket
      */
-void sendFile(const char *fileName, long fileSize, int outToClient)
-{
-    // TO DO Your own code
 
-    // open file
-    FILE * fp;
-    fp = fopen(fileName,"r"); // "r" for read mode of the file.
-    int buffer[1000];
-
-
-    // gentag indtil alt fil data er sendt
-    for (int i = 0; i <= fileSize; i + 1000)
-    {
-        // læs blok fra fil
-        ssize_t ret = read(i,fp,1000);
-        if (ret < 0)
-            error("File does not exist");
-        //else // send blok over til client
-
-
-
-    }
-
-
-    // luk fil
-}
 
 void send_file(const char *fileName, int sockfd)
 {
+  //Open file
   FILE *fp;
   int n;
   char data[1000] = {0};
 
   fp = fopen(fileName, "r");
   if (fp == NULL) {
-    perror("[-]Error in reading file.");
-    exit(1);
+    error("[-]Error in reading file.");
   }
-
-  while(fgets(data, 1000, fp) != NULL) {
-    if (send(sockfd, data, sizeof(data), 0) == -1) {
+    //Keep sending data until done
+  while(fgets(data, 1000, fp) != NULL) 
+  {
+    if (send(sockfd, data, sizeof(data), 0) == -1) 
+    {
       error("Error in sending file.");
     }
     bzero(data, 1000);
   }
-  fclose(fp);
+  fclose(fp); //Close the file
   return;
 }

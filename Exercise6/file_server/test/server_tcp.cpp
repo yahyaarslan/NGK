@@ -74,26 +74,32 @@ int main(int argc, char *argv[])
         bzero(buffer, 1000);
 
         //nu læses filnavnet fra clienten.
-        readTextTCP(buffer, 1000, newsockfd);
+        readTextTCP(buffer, sizeof(buffer),newsockfd);
+        printf("checkpoint 1\n");
+
 
         const char *filename = extractFileName(buffer);
-        printf("%s",filename);
+        printf("checkpoint 2\n");
         long fileSize = check_File_Exists(filename);
+        printf("checkpoint 3\n");
 
         //writeTextTCP(newsockfd,buffer);
+        printf("checkpoint 4\n");
         if(fileSize)
         {
+            printf("checkpoint 4,5\n");
             sendFile(filename, fileSize, newsockfd);
-            writeTextTCP(newsockfd,"0");
         }
         else
         {
-            writeTextTCP(newsockfd,"1");
-            error("File not found");          
+            error("File not found\n");          
         }
+        printf("checkpoint 4.75\n");
         close(newsockfd);
+        printf("checkpoint 4.76\n");
     }
     close(sockfd);
+    printf("checkpoint 4.99\n");
     return 0;
 }
 
@@ -107,24 +113,26 @@ int main(int argc, char *argv[])
 void sendFile(const char *fileName, long fileSize, int outToClient)
 {
     // TO DO Your own code
-
+    printf("checkpoint 5\n");
     // open file
     FILE * fp;
-    fp = fopen(fileName,"r"); // "r" for read mode of the file.
+    fp = fopen(fileName,"wb"); // "r" for read mode of the file.
     int buffer[1000];
-
+    printf("checkpoint 6\n");
 
     // gentag indtil alt fil data er sendt
     for (int i = 0; i <= fileSize; i + 1000)
     {
         // læs blok fra fil
         ssize_t textFromFile = read(*fileName, buffer, sizeof(buffer));
+        printf("checkpoint 7\n");
         if (textFromFile < 0)
             error("File does not exist");
 
         else // send blok over til client
         {
             ssize_t sentData = write(outToClient,buffer,sizeof(buffer));
+            printf("checkpoint 8\n");
             if (sentData)
                 printf("1000 data sent from %d", i);
             else
