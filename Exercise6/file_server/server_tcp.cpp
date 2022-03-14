@@ -18,7 +18,7 @@ using namespace std;
 
 
 void sendFile(const char *fileName, long fileSize, int outToClient);
-
+void send_file(const char *fileName, int sockfd);
 /**
  * main starter serveren og venter på en forbindelse fra en klient
  * Læser filnavn som kommer fra klienten.
@@ -79,8 +79,21 @@ int main(int argc, char *argv[])
         const char *filename = extractFileName(buffer);
         long fileSize = check_File_Exists(filename);
 
-        if(fileSize)
-            sendFile(filename, fileSize, newsockfd);
+        //if(fileSize)
+
+            printf("File exists. Sending file.\n");
+          //  writeTextTCP(newsockfd,buffer);
+          //  send(sockfd, "%ld",fileSize, sizeof(fileSize), 0);
+            send_file(filename, newsockfd);
+
+
+        //else
+
+        //  printf("File does not exist.\n");
+        //  writeTextTCP(newsockfd,buffer);
+
+
+        printf("Client served.\n");
         close(newsockfd);
     }
 
@@ -109,35 +122,37 @@ void sendFile(const char *fileName, long fileSize, int outToClient)
     for (int i = 0; i <= fileSize; i + 1000)
     {
         // læs blok fra fil
-        ssize_t textFromFile = read(*fileName, buffer, sizeof(buffer));
-        if (textFromFile < 0)
+        ssize_t ret = read(i,fp,1000);
+        if (ret < 0)
             error("File does not exist");
+        //else // send blok over til client
 
-        else // send blok over til client
-        {
-            ssize_t sentData = write(outToClient,buffer,sizeof(buffer));
-            if (sentData < 0)
-                error("Data not transmitted");
-        }
-        bzero(buffer, sizeof(buffer));
+
+
     }
 
 
     // luk fil
-    fclose(fp);
-    return;
 }
 
-/*void send_file(FILE *fp, int sockfd){
+void send_file(const char *fileName, int sockfd)
+{
+  FILE *fp;
   int n;
   char data[1000] = {0};
 
-  while(fgets(data, SIZE, fp) != NULL) {
+  fp = fopen(fileName, "r");
+  if (fp == NULL) {
+    perror("[-]Error in reading file.");
+    exit(1);
+  }
+
+  while(fgets(data, 1000, fp) != NULL) {
     if (send(sockfd, data, sizeof(data), 0) == -1) {
       error("Error in sending file.");
     }
-    bzero(data, SIZE);
+    bzero(data, 1000);
   }
   fclose(fp);
   return;
-}*/
+}
