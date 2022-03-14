@@ -15,21 +15,18 @@
 #include "iknlib.h"
 
 using namespace std;
-
 char buffer[BUFSIZE];
 
 void receiveFile(int socketfd);
 
 int main(int argc, char *argv[])
 {
-	// TO DO Your own code
   printf("Starting client...\n");
 
 
   int sockfd, portno, n;
   struct sockaddr_in serv_addr;
   struct hostent *server;
-  //char buffer[BUFSIZE];
 
   if (argc < 3)
 	    error( "ERROR usage: ""hostname"",  ""port""");
@@ -43,9 +40,7 @@ int main(int argc, char *argv[])
 	if (server == NULL)
 	    error("ERROR no such host");
 
-
   printf("Server at: %s, port: %s\n",argv[1], argv[2]);
-
 
   printf("Connect...\n");
 	bzero((char *) &serv_addr, sizeof(serv_addr));
@@ -55,7 +50,7 @@ int main(int argc, char *argv[])
 	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0)
 	    error("ERROR connecting");
 
-      // Write to server
+  // Write to server
   printf("Enter name of file to request (directory optional):\n");
   fgets(buffer,sizeof(buffer),stdin);
   buffer[strlen(buffer)-1] = 0;
@@ -64,8 +59,9 @@ int main(int argc, char *argv[])
   // Receive file
   receiveFile(sockfd);
 
+  // Close
   printf("Closing client...\n\n");
-  close(sockfd); // inside receiveFile()
+  close(sockfd);
   return 0;
 }
 
@@ -89,18 +85,17 @@ void receiveFile(int sockfd)
       error("File does not exist\n. Exiting.");
     }
 
-  //*** Write file demo ***
+  // *** Write file ***
   FILE * fp;
-  fp = fopen(extractFileName(buffer), "wb");   // write binary (?)
+  fp = fopen(extractFileName(buffer), "wb");
 
-  for (size_t i = fileSize; i != 0; i - 1000) // (?)
+  for (size_t i = fileSize; i != 0; i - 1000)
   {
-    readTextTCP(buffer, 1000,sockfd); //(?)
-    fwrite(buffer, 1000, 20, fp); // 20 (?)
+    readTextTCP(buffer, 1000,sockfd);
+    fwrite(buffer, 1000, 20, fp);
 
-    if (i <= 1000) // bad modulus replacement
+    if (i <= 1000)
       i = 1000;
   }
-  // Receive "\n" (?)
   fclose(fp);
 }
