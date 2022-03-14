@@ -13,7 +13,7 @@ const char *extractFileName(const char *fileName);
 const char *readTextTCP(char *text, int length, int inFromServer);
 void writeTextTCP(int outToServer, char *line);
 long getFileSizeTCP(int inFromServer);
-long check_File_Exists(char *fileName);
+long check_File_Exists(const char *fileName);
 
 #ifdef __cplusplus
     }

@@ -65,24 +65,26 @@ int main(int argc, char *argv[])
     // time for listen.
     listen(sockfd,5);
 
+    for(;;)
+    {
+        clilen = sizeof(cli_addr);
+        newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+        if (newsockfd < 0)
+            error("ERROR on accept");
 
-    clilen = sizeof(cli_addr);
-    newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-    if (newsockfd < 0)
-        error("ERROR on accept");
+        bzero(buffer, 1000);
 
-    bzero(buffer, 1000);
+        //nu læses filnavnet fra clienten.
+        readTextTCP(buffer, 1000, newsockfd);
 
-    //nu læses filnavnet fra clienten.
-    readTextTCP(buffer, 1000, newsockfd);
+        const char *filename = extractFileName(buffer);
+        long fileSize = check_File_Exists(filename);
 
-
-    string filename = extractFileName(buffer);
-    //Nu tjekkes om filen findes. 
-    check_File_Exists(filename);
-
-
-}
+        if(fileSize)
+            sendFile(filename, fileSize, newsockfd);
+        close(newsockfd);
+    }
+}   
 
 /**
  * Sender filen som har navnet fileName til klienten
@@ -91,8 +93,25 @@ int main(int argc, char *argv[])
  * @param fileSize Størrelsen på filen, 0 hvis den ikke findes
  * @param outToClient Stream som der skrives til socket
      */
-void sendFile(string fileName, long fileSize, int outToClient)
+void sendFile(const char *fileName, long fileSize, int outToClient)
 {
     // TO DO Your own code
+    
+    // open file
+    FILE * fp;
+    fp = fopen(fileName,"r"); // "r" for read mode of the file. 
+
+
+    // gentag indtil alt fil data er sendt
+    for (long i = 0; i <= fileSize; i + 1000)
+    {
+        // læs blok fra fil
+        
+        // send blok over til client
+
+    }
+
+
+    // luk fil 
 }
 
