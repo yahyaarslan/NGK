@@ -95,7 +95,7 @@ const char *extractFileName(const char *fileName)
  * @param fileName Filnavn
  * @return Størrelsen på filen, 0 hvis den ikke findes
  */
-long check_File_Exists(char *fileName)
+long check_File_Exists(const char *fileName)
 {
     struct stat sts;
     if ((stat (fileName, &sts)) == -1)
