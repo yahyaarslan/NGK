@@ -17,7 +17,7 @@ using namespace std;
 
 
 
-void sendFile(string fileName, long fileSize, int outToClient);
+void sendFile(const char *fileName, long fileSize, int outToClient);
 
 /**
  * main starter serveren og venter på en forbindelse fra en klient
@@ -34,24 +34,21 @@ void sendFile(string fileName, long fileSize, int outToClient);
 int main(int argc, char *argv[])
 {
 
-    int sockfd, newsockfd, portno;
+    printf("Starting server...\n");
+    int sockfd, newsockfd, portno = 9000;
+
     socklen_t clilen;
     char buffer[BUFSIZE];
     struct sockaddr_in serv_addr, cli_addr;
     int n;
-    if (argc < 3) 
-    {
-        error("ERROR, no port provided");
-    }
 
     //creating socket now.
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0)
-    {
         error("Error opening socket");
-    }
+
+    printf("Binding...\n");
     bzero((char *) &serv_addr, sizeof(serv_addr));
-    portno = atoi(argv[1]);
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(portno);
@@ -63,14 +60,18 @@ int main(int argc, char *argv[])
 
 
     // time for listen.
+    printf("Listen...\n");
     listen(sockfd,5);
 
     for(;;)
     {
+        printf("Accept...\n");
         clilen = sizeof(cli_addr);
         newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
         if (newsockfd < 0)
             error("ERROR on accept");
+        else
+            printf("Accepted\n");
 
         bzero(buffer, 1000);
 
@@ -84,7 +85,10 @@ int main(int argc, char *argv[])
             sendFile(filename, fileSize, newsockfd);
         close(newsockfd);
     }
-}   
+
+    close(sockfd);
+    return 0;
+}
 
 /**
  * Sender filen som har navnet fileName til klienten
@@ -96,10 +100,10 @@ int main(int argc, char *argv[])
 void sendFile(const char *fileName, long fileSize, int outToClient)
 {
     // TO DO Your own code
-    
+
     // open file
     FILE * fp;
-    fp = fopen(fileName,"r"); // "r" for read mode of the file. 
+    fp = fopen(fileName,"r"); // "r" for read mode of the file.
     int buffer[1000];
 
 
@@ -110,13 +114,12 @@ void sendFile(const char *fileName, long fileSize, int outToClient)
         ssize_t ret = read(i,fp,1000);
         if (ret < 0)
             error("File does not exist");
-        else // send blok over til client
-            
+        //else // send blok over til client
+
 
 
     }
 
 
-    // luk fil 
+    // luk fil
 }
-
