@@ -52,21 +52,19 @@ int main(int argc, char *argv[])
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(portno);
+    if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
+    	 error("ERROR on binding");
 
-
-    //time for checking bind.
-    if (bind(sockfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr)) < 0);
-        error("Error on binding");
 
 
     // time for listen.
     printf("Listen...\n");
     listen(sockfd,5);
+    clilen = sizeof(cli_addr);
 
     for(;;)
     {
         printf("Accept...\n");
-        clilen = sizeof(cli_addr);
         newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
         if (newsockfd < 0)
             error("ERROR on accept");
@@ -122,4 +120,18 @@ void sendFile(const char *fileName, long fileSize, int outToClient)
 
 
     // luk fil
+}
+
+void send_file(FILE *fp, int sockfd){
+  int n;
+  char data[1000] = {0};
+
+  while(fgets(data, SIZE, fp) != NULL) {
+    if (send(sockfd, data, sizeof(data), 0) == -1) {
+      error("Error in sending file.");
+    }
+    bzero(data, SIZE);
+  }
+  fclose(fp);
+  return;
 }
