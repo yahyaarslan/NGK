@@ -17,12 +17,11 @@
 using namespace std;
 char buffer[BUFSIZE];
 
-void receiveFile(int socketfd);
+void receiveFile(const char *fileName, int socketfd);
 
 int main(int argc, char *argv[])
 {
   printf("Starting client...\n");
-
 
   int sockfd, portno, n;
   struct sockaddr_in serv_addr;
@@ -50,20 +49,55 @@ int main(int argc, char *argv[])
 	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0)
 	    error("ERROR connecting");
 
+
+
+  // *** START ***
   // Write to server
   printf("Enter name of file to request (directory optional):\n");
   fgets(buffer,sizeof(buffer),stdin);
   buffer[strlen(buffer)-1] = 0;
   writeTextTCP(sockfd,buffer);
 
+  // Extract filename
+  const char *fileName = extractFileName(buffer);
+
   // Receive file
-  receiveFile(sockfd);
+  receiveFile(fileName,sockfd);
 
   // Close
   printf("Closing client...\n\n");
   close(sockfd);
   return 0;
 }
+
+void receiveFile(const char* fileName, int sockfd)
+{
+	// Modtag filstørrelse
+  long fileSize = getFileSizeTCP(sockfd);
+  if (0==fileSize)
+    {
+      error("File does not exist\n. Exiting.");
+    }
+
+  // *** Write file ***
+  FILE * fp;
+  fp = fopen(fileName, "wb");
+
+  for (size_t i = fileSize; i != 0; i - 1000)
+  {
+
+    read(sockfd,buffer,sizeof(buffer));
+    fwrite(buffer, 1000, 20, fp);
+
+    if (i <= 1000)
+      i = 1000;
+  }
+
+  fclose(fp);
+}
+
+
+
 
 /**
  * Modtager filstørrelsen og udskriver meddelelsen: "Filen findes ikke" hvis størrelsen = 0
@@ -76,26 +110,3 @@ int main(int argc, char *argv[])
  * @param sockfd Stream for at skrive til/læse fra serveren
  */
  //void receiveFile(string fileName, int sockfd)
-void receiveFile(int sockfd)
-{
-	//Modtag filstørrelse
-  long fileSize = getFileSizeTCP(sockfd);
-  if (0==fileSize)
-    {
-      error("File does not exist\n. Exiting.");
-    }
-
-  // *** Write file ***
-  FILE * fp;
-  fp = fopen(extractFileName(buffer), "wb");
-
-  for (size_t i = fileSize; i != 0; i - 1000)
-  {
-    readTextTCP(buffer, 1000,sockfd);
-    fwrite(buffer, 1000, 20, fp);
-
-    if (i <= 1000)
-      i = 1000;
-  }
-  fclose(fp);
-}
