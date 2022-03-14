@@ -100,14 +100,19 @@ void sendFile(const char *fileName, long fileSize, int outToClient)
     // open file
     FILE * fp;
     fp = fopen(fileName,"r"); // "r" for read mode of the file. 
+    int buffer[1000];
 
 
     // gentag indtil alt fil data er sendt
-    for (long i = 0; i <= fileSize; i + 1000)
+    for (int i = 0; i <= fileSize; i + 1000)
     {
         // læs blok fra fil
-        
-        // send blok over til client
+        ssize_t ret = read(i,fp,1000);
+        if (ret < 0)
+            error("File does not exist");
+        else // send blok over til client
+            
+
 
     }
 
