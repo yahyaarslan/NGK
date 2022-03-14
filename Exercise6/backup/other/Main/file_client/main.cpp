@@ -46,9 +46,6 @@ int main(int argc, char *argv[])
 
   printf("Server at: %s, port: %s\n",argv[1], argv[2]);
 
-  // Write to server
-  printf("Enter name of file to request (directory optional):\n");
-  fgets(buffer,sizeof(buffer),stdin);
 
   printf("Connect...\n");
 	bzero((char *) &serv_addr, sizeof(serv_addr));
@@ -58,6 +55,10 @@ int main(int argc, char *argv[])
 	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0)
 	    error("ERROR connecting");
 
+      // Write to server
+  printf("Enter name of file to request (directory optional):\n");
+  fgets(buffer,sizeof(buffer),stdin);
+  buffer[strlen(buffer)-1] = 0;
   writeTextTCP(sockfd,buffer);
 
   // Receive file
