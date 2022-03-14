@@ -15,7 +15,7 @@
   #include "iknlib.h"
 
   using namespace std;
-  #define SIZE 1024
+  #define SIZE 1000
   char buffer[BUFSIZE];
 
   void receiveFile(const char *fileName, int socketfd);
@@ -59,11 +59,21 @@
     buffer[strlen(buffer)-1] = 0;
     writeTextTCP(sockfd,buffer);
 
-    // Extract filename
+    // Save filename
     const char *fileName = extractFileName(buffer);
+    printf("File name is: %s \n",fileName);
 
-    // Receive file
-    receiveFile(fileName,sockfd);
+    // Check filesize
+    //long fileSize = getFileSizeTCP(sockfd);
+    //printf("File size is: %ld \n",fileSize);
+
+    //if (fileSize)
+
+      printf("File Exists. Receiving.\n");
+      receiveFile(fileName,sockfd);
+
+    //else
+      //printf("File does not exist. Exiting.\n");
 
     // Close
     printf("Closing client...\n\n");
@@ -73,30 +83,23 @@
 
   void receiveFile(const char* fileName, int sockfd)
   {
-    // Modtag filstørrelse
-    long fileSize = getFileSizeTCP(sockfd);
-    if (fileSize)
-    {
+      printf("TEST1");
       FILE *fp;
       int n;
       char buffer[SIZE];
-
       fp = fopen(fileName, "w");
 
-      while (n >= 0)
-      {
+
+        do
+        {
+        printf("%d\n",n);
         n = recv(sockfd, buffer, SIZE, 0);
         fprintf(fp, "%s", buffer);
         bzero(buffer,SIZE);
-      }
+      } while (n > 0);
+
 
       fclose(fp);
-    }
-    else
-    {
-      error("File does not exist. Exiting.");
-    }
-    return;
   }
 
 
