@@ -77,13 +77,22 @@ int main(int argc, char *argv[])
         readTextTCP(buffer, 1000, newsockfd);
 
         const char *filename = extractFileName(buffer);
+        printf("%s",filename);
         long fileSize = check_File_Exists(filename);
 
+        //writeTextTCP(newsockfd,buffer);
         if(fileSize)
+        {
             sendFile(filename, fileSize, newsockfd);
+            writeTextTCP(newsockfd,"0");
+        }
+        else
+        {
+            writeTextTCP(newsockfd,"1");
+            error("File not found");          
+        }
         close(newsockfd);
     }
-
     close(sockfd);
     return 0;
 }
@@ -116,7 +125,9 @@ void sendFile(const char *fileName, long fileSize, int outToClient)
         else // send blok over til client
         {
             ssize_t sentData = write(outToClient,buffer,sizeof(buffer));
-            if (sentData < 0)
+            if (sentData)
+                printf("1000 data sent from %d", i);
+            else
                 error("Data not transmitted");
         }
         bzero(buffer, sizeof(buffer));
