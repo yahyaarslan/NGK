@@ -1,9 +1,6 @@
-/* *** Sources: ***
-  ***
-  Linuxhowtos, C_C++_Socket, https://www.linuxhowtos.org/C_C++/socket.htm
-  Last visited: Tuesday, March 15, 2022
-  ***
-*/
+/* Creates a datagram server.  The port
+   number is passed as an argument.  This
+   server runs forever */
 
 #include <sys/types.h>
 #include <stdlib.h>
@@ -64,6 +61,8 @@ int main(int argc, char *argv[])
 
    if ((buf[0] == 'U') || (buf[0] == 'u'))
    {
+     //n = sendto(sock,"Got command 'U/u' \n",30, 0,(struct sockaddr *)&from,fromlen);
+     //if (n  < 0) error("sendto");
      sendU();
    }
 
@@ -82,9 +81,9 @@ int main(int argc, char *argv[])
 
  void sendU()
  {
-   // Read file
-   fp = fopen("/proc/uptime", "rb");
-   n = fread(buf, 1, sizeof(buf), fp);
+   //*** Read file***
+   fp = fopen("/proc/uptime", "rb");   // read binary
+   n = fread(buf, 1, sizeof(buf), fp);  // Automatic seek!
    fclose(fp);
 
    // print file
@@ -93,15 +92,14 @@ int main(int argc, char *argv[])
 
    // send file
    n = sendto(sock,buf,30, 0,(struct sockaddr *)&from,fromlen);
-   if (n  < 0)
-    error("sendto");
+   if (n  < 0) error("sendto");
  }
 
 void sendL()
 {
-  // Read file
-  fp = fopen("/proc/loadavg", "rb");
-  n = fread(buf, 1, sizeof(buf), fp);
+  //*** Read file***
+  fp = fopen("/proc/loadavg", "rb");   // read binary
+  n = fread(buf, 1, sizeof(buf), fp);  // Automatic seek!
   fclose(fp);
 
    // print file
@@ -110,13 +108,11 @@ void sendL()
 
   // send file
   n = sendto(sock,buf,30, 0,(struct sockaddr *)&from,fromlen);
-  if (n  < 0)
-    error("sendto");
+  if (n  < 0) error("sendto");
 }
 
 void sendElse()
 {
   n = sendto(sock,"Unknown command.",40, 0,(struct sockaddr *)&from,fromlen);
-  if (n  < 0)
-    error("sendto");
+  if (n  < 0) error("sendto");
 }
