@@ -52,7 +52,6 @@
     error("ERROR connecting");
 
 
-
     // *** START ***
     // Write to server
     printf("Enter name of file to request (directory optional):\n");
@@ -64,8 +63,17 @@
     const char *fileName = extractFileName(buffer);
     printf("File name is: %s \n",fileName);
 
-    printf("File Exists. Receiving.\n");
-    receiveFile(fileName,sockfd);
+    // Check filesize
+    long fileSize = getFileSizeTCP(sockfd);
+    printf("File size is: %ld \n",fileSize);
+
+    if (fileSize > 0)
+    {
+      printf("File Exists. Receiving.\n");
+      receiveFile(fileName,sockfd);
+    }
+    else
+      printf("File does not exist. Exiting.\n");
 
     // Close
     printf("Closing client...\n\n");
@@ -78,15 +86,13 @@
       FILE *fp;
       fp = fopen(fileName, "w");
 
-
       do
       {
-        printf("%d\n",n);
         n = recv(sockfd, buffer, SIZE, 0);
+        printf("Received: %d bytes.\n",n);
         fprintf(fp, "%s", buffer);
         bzero(buffer,SIZE);
       } while (n > 0);
-
 
       fclose(fp);
   }
