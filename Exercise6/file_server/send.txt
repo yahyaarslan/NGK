@@ -1,5 +1,0 @@
-linje 1
-linje 2
-linje 3
-linje 4
-linje 5

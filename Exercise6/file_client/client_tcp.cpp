@@ -29,8 +29,8 @@
     struct sockaddr_in serv_addr;
     struct hostent *server;
 
-    if (argc < 3)
-    error( "ERROR usage: ""hostname"",  ""port""");
+    if (argc < 4)
+    error( "ERROR usage: ""hostname"",  ""port"", ""filename(/path)""");
 
     portno = atoi(argv[2]);
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -53,10 +53,9 @@
 
 
     // *** START ***
-    // Write to server
-    printf("Enter name of file to request (directory optional):\n");
-    fgets(buffer,sizeof(buffer),stdin);
-    buffer[strlen(buffer)-1] = 0;
+    // Write filename to server
+    sprintf(buffer, "%s", (argv[3]));
+    buffer[strlen(buffer)] = 0;
     writeTextTCP(sockfd,buffer);
 
     // Save filename

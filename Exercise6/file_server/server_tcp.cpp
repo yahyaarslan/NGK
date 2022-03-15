@@ -13,11 +13,10 @@
 #include <netinet/in.h>
 #include "iknlib.h"
 
+#define BUFSIZE 1000
+
 using namespace std;
 
-
-
-void sendFile(const char *fileName, long fileSize, int outToClient);
 void send_file(const char *fileName, int sockfd);
 /**
  * @throws IOException
@@ -56,35 +55,43 @@ int main(int argc, char *argv[])
 
     for(;;)
     {
-        printf("Accept...\n");
+        printf("Accept...\n\n");
         newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen); //Accepting connection
         if (newsockfd < 0)
             error("ERROR on accept");
         else
             printf("Accepted\n");
 
-        bzero(buffer, 1000); //Cleaner bufferen så den er klar til ny data. 
+        bzero(buffer, 1000); //Cleaner bufferen så den er klar til ny data.
 
         //nu læses filnavnet fra clienten.
         readTextTCP(buffer, 1000, newsockfd);
 
         const char *filename = extractFileName(buffer);
+        printf("File name is: %s \n",filename);
+
         long fileSize = check_File_Exists(filename);
-        
+        printf("File size is: %ld \n",fileSize);
+
+        // Send fileSize
+        char fileSizeBuffer[BUFSIZE];
+        sprintf(fileSizeBuffer, "%ld", fileSize);
+        writeTextTCP(newsockfd,fileSizeBuffer);
+
         if (fileSize > 0)
         {
-        printf("File exists. Sending file.\n");
-        send_file(filename, newsockfd);
+          printf("File exists. Sending file.\n");
+          send_file(filename, newsockfd);
         }
         else
         {
-          error("File not found");
+          printf("File not found\n");
         }
         printf("Client served.\n");
         close(newsockfd);
     }
 
-    close(sockfd); //Close the connection. 
+    close(sockfd); //Close the connection.
     return 0;
 }
 
@@ -105,17 +112,16 @@ void send_file(const char *fileName, int sockfd)
 
   fp = fopen(fileName, "r");
   if (fp == NULL) {
-    error("[-]Error in reading file.");
+    error("Error in reading file.");
   }
-    //Keep sending data until done
-  while(fgets(data, 1000, fp) != NULL) 
+
+  //Keep sending data until done
+  do
   {
-    if (send(sockfd, data, sizeof(data), 0) == -1) 
-    {
-      error("Error in sending file.");
-    }
-    bzero(data, 1000);
-  }
+    n = send(sockfd, data, sizeof(data), 0);
+    printf("Sent: %d bytes.\n",n);
+  } while (fgets(data, 1000, fp) != NULL);
+
   fclose(fp); //Close the file
   return;
 }
