@@ -1,3 +1,21 @@
+/* *** Sources: ***
+  ***
+  Michael Alrøe, Exercise_6_cpp.zip, https://aarhusuniversitet-my.sharepoint.com/:u:/g/personal/au284590_uni_au_dk/EX4PXuND1XxIhZzbFIwcuEQBJxsz5XmFR49ZZqUjZ6vDcw
+  Last visited: Tuesday, March 15, 2022
+
+  Michael Alrøe, Exercise_6_cpp_Filehandling.zip, Exercise_6_cpp_Filehandling.zip, https://aarhusuniversitet-my.sharepoint.com/:u:/g/personal/au284590_uni_au_dk/EdbZ4nw-8P9NglQPkDMORkoB2eFkcHOYK_RwwkeOq-qK1g
+  Last visited: Tuesday, March 15, 2022
+
+  Michael Alrøe, Exercise_6_cpp_SocketDemo.zip, https://aarhusuniversitet-my.sharepoint.com/:u:/g/personal/au284590_uni_au_dk/EdJjECSBIVFGpxzJn3XtRLIBNQxLs6ZYx2oG6oKH1e6fJg
+  Last visited: Tuesday, March 15, 2022
+
+  Linuxhowtos, C_C++_Socket, https://www.linuxhowtos.org/C_C++/socket.htm
+  Last visited: Tuesday, March 15, 2022
+
+  NIKHIL KUMAR TOMAR, File Transfer using TCP Socket in C, https://idiotdeveloper.com/file-transfer-using-tcp-socket-in-c/
+  Last visited: Tuesday, March 15, 2022
+  ***
+*/
 //============================================================================
 // Description : file_server in C++, Ansi-style
 //============================================================================
