@@ -17,6 +17,7 @@
   using namespace std;
   #define SIZE 1000
   char buffer[BUFSIZE];
+  int n = 0;
 
   void receiveFile(const char *fileName, int socketfd);
 
@@ -63,17 +64,8 @@
     const char *fileName = extractFileName(buffer);
     printf("File name is: %s \n",fileName);
 
-    // Check filesize
-    //long fileSize = getFileSizeTCP(sockfd);
-    //printf("File size is: %ld \n",fileSize);
-
-    //if (fileSize)
-
-      printf("File Exists. Receiving.\n");
-      receiveFile(fileName,sockfd);
-
-    //else
-      //printf("File does not exist. Exiting.\n");
+    printf("File Exists. Receiving.\n");
+    receiveFile(fileName,sockfd);
 
     // Close
     printf("Closing client...\n\n");
@@ -83,15 +75,12 @@
 
   void receiveFile(const char* fileName, int sockfd)
   {
-      printf("TEST1");
       FILE *fp;
-      int n;
-      char buffer[SIZE];
       fp = fopen(fileName, "w");
 
 
-        do
-        {
+      do
+      {
         printf("%d\n",n);
         n = recv(sockfd, buffer, SIZE, 0);
         fprintf(fp, "%s", buffer);
@@ -101,18 +90,3 @@
 
       fclose(fp);
   }
-
-
-
-
-  /**
-   * Modtager filstørrelsen og udskriver meddelelsen: "Filen findes ikke" hvis størrelsen = 0
-   * ellers
-   * Åbnes filen for at skrive de bytes som senere modtages fra serveren (HUSK kun selve filnavn)
-   * Modtag og gem filen i blokke af 1000 bytes indtil alle bytes er modtaget.
-   * Luk filen, samt input output streams
-   *
-   * @param fileName Det fulde filnavn incl. evt. stinavn
-   * @param sockfd Stream for at skrive til/læse fra serveren
-   */
-   //void receiveFile(string fileName, int sockfd)
