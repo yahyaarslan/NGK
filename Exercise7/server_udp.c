@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
    printf("\n");
 
    // send file
-   n = sendto(sock,buf,30, 0,(struct sockaddr *)&from,fromlen);
+   n = sendto(sock,buf,strlen(buf), 0,(struct sockaddr *)&from,fromlen);
    if (n  < 0) error("sendto");
  }
 
@@ -107,7 +107,7 @@ void sendL()
   printf("\n");
 
   // send file
-  n = sendto(sock,buf,30, 0,(struct sockaddr *)&from,fromlen);
+  n = sendto(sock,buf,strlen(buf), 0,(struct sockaddr *)&from,fromlen);
   if (n  < 0) error("sendto");
 }
 
