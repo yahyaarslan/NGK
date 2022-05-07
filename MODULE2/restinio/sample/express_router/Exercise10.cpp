@@ -61,7 +61,7 @@ class weathers_handler_t
 {
 public :
 	explicit weathers_handler_t( weather_collection_t & weathers )
-		:	m_weathers( weathers)
+		:	m_weathers( weathers )
 	{}
 
 	weathers_handler_t( const weathers_handler_t & ) = delete;
@@ -71,19 +71,19 @@ public :
 		const restinio::request_handle_t& req, rr::route_params_t ) const
 	{
 		auto resp = init_resp( req->create_response() );
-		
+
 		resp.set_body(
 			"Weather collection (Weather count: " +
 				std::to_string( m_weathers.size() ) + ")\n" );
 
-		for ( std::size_t i = 0; i < m_weathers.size(); ++i )
+		for( std::size_t i = 0; i < m_weathers.size(); ++i )
 		{
 			const auto & b = m_weathers[ i ];
-			resp.append_body( "\n\nWeather data " + std::to_string( i + 1 ) + ". \n" );
+			resp.append_body( "Weather data " + std::to_string( i + 1 ) + ". \n" );
 			resp.append_body( "ID: " + b.m_ID + "\n" );
 			resp.append_body( "Tidspunkt (dato og klokkeslet):\n");
-			resp.append_body( "		Dato: " + b.m_Date + "\n");
-			resp.append_body( "		Klokkeslet: " + b.m_Time + "\n");
+			resp.append_body( "		Dato:" + b.m_Date + "\n");
+			resp.append_body( "		Klokkeslet:" + b.m_Time + "\n");
 			resp.append_body( "Sted:\n");
 			resp.append_body( "		Navn: " + b.m_Name + "\n");
 			resp.append_body( "		Lat: " + b.m_Lat + "\n");
@@ -118,34 +118,6 @@ public :
 		return resp.done();
 	}
 
-	auto on_weathers_get_threelist(
-		const restinio::request_handle_t& req, rr::route_params_t params )
-	{
-		auto resp = init_resp( req->create_response() );
-		size_t i = 0;                                                                                                                                                                                                           
-		for (size_t j = 3; j > 0; j--) // print three weather data at max
-		{
-			short tempSize = m_weathers.size()-i;
-			if (tempSize >= 0) // check if 0 is reached.
-			{
-				const auto & b = m_weathers[ tempSize ];
-				resp.append_body( "\n\nWeather data " + std::to_string( tempSize ) + ". \n" );
-				resp.append_body( "ID: " + b.m_ID + "\n" );
-				resp.append_body( "Tidspunkt (dato og klokkeslet):\n");
-				resp.append_body( "		Dato: " + b.m_Date + "\n");
-				resp.append_body( "		Klokkeslet: " + b.m_Time + "\n");
-				resp.append_body( "Sted:\n");
-				resp.append_body( "		Navn: " + b.m_Name + "\n");
-				resp.append_body( "		Lat: " + b.m_Lat + "\n");
-				resp.append_body( "		Lon: " + b.m_Lon + "\n");
-				resp.append_body( "Temperatur: " + b.m_Temperature + "\n" );
-				resp.append_body( "Luftfugtighed: " + b.m_Humidity + "\n" );
-				i++;
-			}
-		}
-	return resp.done();
-	}
-
 	auto on_ID_get(
 		const restinio::request_handle_t& req, rr::route_params_t params )
 	{
@@ -161,11 +133,11 @@ public :
 				const auto & b = m_weathers[ i ];
 				if( ID == b.m_ID )
 				{
-					resp.append_body( "\n\nWeather data " + std::to_string( i + 1 ) + ". \n" );
+					resp.append_body( "Weather data " + std::to_string( i + 1 ) + ". \n" );
 					resp.append_body( "ID: " + b.m_ID + "\n" );
 					resp.append_body( "Tidspunkt (dato og klokkeslet):\n");
-					resp.append_body( "		Dato: " + b.m_Date + "\n");
-					resp.append_body( "		Klokkeslet: " + b.m_Time + "\n");
+					resp.append_body( "		Dato:" + b.m_Date + "\n");
+					resp.append_body( "		Klokkeslet:" + b.m_Time + "\n");
 					resp.append_body( "Sted:\n");
 					resp.append_body( "		Navn: " + b.m_Name + "\n");
 					resp.append_body( "		Lat: " + b.m_Lat + "\n");
@@ -207,7 +179,6 @@ public :
 		const auto weathernum = restinio::cast_to< std::uint32_t >( params[ "weathernum" ] );
 
 		auto resp = init_resp( req->create_response() );
-
 		try
 		{
 			auto b = json_dto::from_json< weather_t >( req->body() );
@@ -296,7 +267,6 @@ auto server_handler( weather_collection_t & weather_collection )
 
 	// Handlers for '/' path.
 	router->http_get( "/", by( &weathers_handler_t::on_weathers_list ) );
-	router->http_get( "/three", by( &weathers_handler_t::on_weathers_get_threelist ) );
 	router->http_post( "/", by( &weathers_handler_t::on_new_weather ) );
 
 	// Disable all other methods for '/'.
@@ -348,11 +318,10 @@ int main()
 				router_t >;
 
 		weather_collection_t weather_collection{
-			{"1", "20211105", "12:15", "Aarhus N", "13.692", "19.438", "13.1", "70%"},
-			{"2", "20211105", "12:30", "Aarhus N", "13.692", "19.438", "13.2", "71%"},
-			{"3", "20211105", "12:45", "Aarhus N", "13.692", "19.438", "13.3", "72%"},
-			{"4", "20211105", "13:00", "Aarhus N", "13.692", "19.438", "13.4", "73%"},
-			{"5", "20211105", "13:15", "Aarhus N", "13.692", "19.438", "13.5", "74%"}
+			{"1", "20211105", "12:15", "Aarhus N", "13.692", "19.438", "13.1", "70%"}
+			/*{ "202001", "01 03 2022", "17 00", "Brabrand", "8 deg. C.", "40%" },
+			{ "202002", "01 04 2022", "17 00", "Brabrand", "9 deg. C.", "50%" },
+			{ "202003", "01 05 2022", "17 00", "Brabrand", "10 deg. C.", "60%" }*/
 		};
 
 		restinio::run(
