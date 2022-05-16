@@ -1,7 +1,16 @@
+<!DOCTYPE html>
 <html>
 
 <head>
-  <script>
+  <title>SWNGK WebClient</title>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/js/tabulator.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/css/tabulator.min.css">
+  </link>
+
+  <script type = "text/javascript">
     // *** LISTENER *** //
     // Note: Route Is chat
     const socket = new WebSocket("ws://localhost:8080/chat");
@@ -117,7 +126,7 @@
         })
         .then((response) => { })
         .catch((error) => alert("Try again"));
-    }
+    } 
   </script>
 </body>
 

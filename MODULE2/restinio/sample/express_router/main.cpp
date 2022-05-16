@@ -2,7 +2,19 @@
 
 #include <restinio/all.hpp>
 
-#include <json_dto/pub.hpp>
+#include "/home/yarslan/Desktop/NGK/MODULE2/json_dto/dev/json_dto/pub.hpp"
+
+#include <restinio/websocket/websocket.hpp>
+
+namespace rws = restinio::websocket::basic;
+
+using traits_t = 
+		restinio::traist_t<
+		restinio::asio_timer_manager_t,
+		restinio::single_trheaded_ostream_logger_t,
+		router_t >;
+
+using ws_registry_t = std::map< std::uint64_t, rws::ws_handle_t;
 
 struct weather_t
 {
