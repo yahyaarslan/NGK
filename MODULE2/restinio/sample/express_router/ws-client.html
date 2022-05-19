@@ -10,20 +10,20 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/css/tabulator.min.css">
   </link>
 
-  <script type = "text/javascript">
+  <script type="text/javascript">
     // *** LISTENER *** //
-    // Note: Route Is chat
-    const socket = new WebSocket("ws://localhost:8080/chat");
-
-    socket.addEventListener("open", function (event) {
+    // NOTE: ROUTE IS CHAT
+    const socket = new WebSocket('ws://localhost:8080/chat');
+    // Connection opened
+    socket.addEventListener('open', function (event) {
       // Sending a message to the web socket server...
-      socket.send("Hello Server!");
+      socket.send('Updates coming here');
     });
-
     // Listen for messages
-    socket.addEventListener("message", function (message) {
-      console.log("Message from server", message.data);
-      document.getElementById("wsupdate").innerHTML = message.data;
+    socket.addEventListener('message', function (message) {
+      console.log('Message from server ', message.data);
+      getData();
+      document.getElementById("liveupdate").innerText = message.data;
     });
   </script>
 
@@ -72,56 +72,82 @@
     }
   </script>
 
-<script>
-  function getData() {
-    // *** GET *** //
-    axios
-      .get("http://localhost:8080")
-      .then((response) => {
-        setTable(response.data);
-      })
-      .catch((error) => alert("Try again"));
-  }
-</script>
+  <script>
+    function getData() {
+      // *** GET *** //
+      axios
+        .get("http://localhost:8080")
+        .then((response) => {
+          setTable(response.data);
+        })
+        .catch((error) => alert("Try again"));
+    }
+  </script>
 
-<script>
-  // *** POST *** //
-  function sendData() {
-    axios
-      .post("http://localhost:8080", {
-        ID: document.getElementById("ID").value,
-        Date: document.getElementById("Date").value,
-        Time: document.getElementById("Time").value,
-        Name: document.getElementById("Name").value,
-        Lat: document.getElementById("Lat").value,
-        Lon: document.getElementById("Lon").value,
-        Temperature: document.getElementById("Temperature").value,
-        Humidity: document.getElementById("Humidity").value,
-      })
-      .then((response) => { })
-      .catch((error) => alert("Try again"));
-  }
-</script>
+  <script>
+    //Get data by Id
+    function getDataById(ID) {
+      var idNum = document.getElementById("ID").value;
+      console.log("Get by ID")
+      console.log('http://localhost:8080/' + document.getElementById("ID").value)
+      axios.get('http://localhost:8080/' + idNum)
+        .then(response => {
+          setTable(response.data);
+        }).catch(error => alert('Try again'));
+    }
+  </script>
 
-<script>
-  // *** PUT *** //
-  function updateData(idnumber) {
-    var url = "http://localhost:8080/" + idenumber;
-    axios
-      .put(url, {
-        ID: document.getElementById("ID").value,
-        Date: document.getElementById("Date").value,
-        Time: document.getElementById("Time").value,
-        Name: document.getElementById("Name").value,
-        Lat: document.getElementById("Lat").value,
-        Lon: document.getElementById("Lon").value,
-        Temperature: document.getElementById("Temperature").value,
-        Humidity: document.getElementById("Humidity").value,
-      })
-      .then((response) => { })
-      .catch((error) => alert("Try again"));
-  } 
-</script>
+  <script>
+    // *** POST *** //
+    function sendData() {
+      axios
+        .post("http://localhost:8080", {
+          ID: document.getElementById("ID").value,
+          Date: document.getElementById("Date").value,
+          Time: document.getElementById("Time").value,
+          Name: document.getElementById("Name").value,
+          Lat: document.getElementById("Lat").value,
+          Lon: document.getElementById("Lon").value,
+          Temperature: document.getElementById("Temperature").value,
+          Humidity: document.getElementById("Humidity").value,
+        })
+        .then((response) => { })
+        .catch((error) => alert("Try again"));
+    }
+  </script>
+
+  <script>
+    // *** PUT *** //
+    function updateData(idnumber) {
+      var url = "http://localhost:8080/" + idenumber;
+      axios
+        .put(url, {
+          ID: document.getElementById("ID").value,
+          Date: document.getElementById("Date").value,
+          Time: document.getElementById("Time").value,
+          Name: document.getElementById("Name").value,
+          Lat: document.getElementById("Lat").value,
+          Lon: document.getElementById("Lon").value,
+          Temperature: document.getElementById("Temperature").value,
+          Humidity: document.getElementById("Humidity").value,
+        })
+        .then((response) => { })
+        .catch((error) => alert("Try again"));
+    } 
+  </script>
+
+  <script>
+    // Delete data by Id
+    function deleteById(ID) {
+      var idNum = document.getElementById("ID").value;
+      console.log("Get by ID")
+      console.log('http://localhost:8080/' + document.getElementById("ID").value)
+      axios.delete('http://localhost:8080/' + idNum)
+        .then(response => {
+          setTable(response.data);
+        }).catch(error => alert('Try again'));
+    }
+  </script>
 
 </head>
 
@@ -135,7 +161,17 @@
   <p>Lon<input id="longitude" type="text"></p>
   <p>Temperature<input id="temperature" type="text"></p>
   <p>Humidity<input id="humidity" type="text"></p>
-  <input type = "button" onclick = "sendData()" value = "Send Data">
+  <input type="button" onclick="sendData()" value="Send Data">
+
+  <input type="button" onclick="getData()" value="Hent data">
+  <div id="table"> </div>
+
+  <input type="button" onclick="putData()" value="PUT by ID">
+  <input type="button" onclick="getDataById()" value="Get by ID ">
+  <input type="button" onClikc="deleteById()" value="Delete by ID">
+
+  <b>Action: </b>
+  <i id="liveupdate">*changes*</i><br>
 </body>
 
 </html>
