@@ -35,99 +35,107 @@
         height: "311px",
         columns: [
           {
-            title: "Id",
-            field: "id",
+            title: "ID",
+            field: "ID",
           },
           {
             title: "Date",
-            field: "date",
+            field: "Date",
           },
           {
             title: "Time",
-            field: "time",
+            field: "Time",
           },
           {
-            title: "Place",
-            field: "place.name",
+            title: "Name",
+            field: "Name",
           },
           {
-            title: "Place",
-            field: "place.lat",
+            title: "Lat",
+            field: "Lat",
           },
           {
-            title: "Place",
-            field: "place.lon",
+            title: "Lon",
+            field: "Lon",
           },
           {
             title: "Temperature",
-            field: "temperature",
+            field: "Temperature",
           },
           {
             title: "Humidity",
-            field: "humidity",
+            field: "Humidity",
           },
         ],
       });
       $("#table").tabulator("setData", data);
     }
   </script>
+
+<script>
+  function getData() {
+    // *** GET *** //
+    axios
+      .get("http://localhost:8080")
+      .then((response) => {
+        setTable(response.data);
+      })
+      .catch((error) => alert("Try again"));
+  }
+</script>
+
+<script>
+  // *** POST *** //
+  function sendData() {
+    axios
+      .post("http://localhost:8080", {
+        ID: document.getElementById("ID").value,
+        Date: document.getElementById("Date").value,
+        Time: document.getElementById("Time").value,
+        Name: document.getElementById("Name").value,
+        Lat: document.getElementById("Lat").value,
+        Lon: document.getElementById("Lon").value,
+        Temperature: document.getElementById("Temperature").value,
+        Humidity: document.getElementById("Humidity").value,
+      })
+      .then((response) => { })
+      .catch((error) => alert("Try again"));
+  }
+</script>
+
+<script>
+  // *** PUT *** //
+  function updateData(idnumber) {
+    var url = "http://localhost:8080/" + idenumber;
+    axios
+      .put(url, {
+        ID: document.getElementById("ID").value,
+        Date: document.getElementById("Date").value,
+        Time: document.getElementById("Time").value,
+        Name: document.getElementById("Name").value,
+        Lat: document.getElementById("Lat").value,
+        Lon: document.getElementById("Lon").value,
+        Temperature: document.getElementById("Temperature").value,
+        Humidity: document.getElementById("Humidity").value,
+      })
+      .then((response) => { })
+      .catch((error) => alert("Try again"));
+  } 
+</script>
+
 </head>
 
 <body>
-  <script>
-    function getData() {
-      // *** GET *** //
-      axios
-        .get("http://localhost:8080")
-        .then((response) => {
-          setTable(response.data);
-        })
-        .catch((error) => alert("Try again"));
-    }
-  </script>
-
-  <script>
-    // *** POST *** //
-    function sendData() {
-      axios
-        .post("http://localhost:8080", {
-          id: document.getElementById("id").value,
-          date: document.getElementById("date").value,
-          time: document.getElementById("time").value,
-          place: {
-            placename: document.getElementById("placename").value,
-            lat: document.getElementById("lat").value,
-            lon: document.getElementById("lon").value,
-          },
-          temperature: document.getElementById("temperature").value,
-          humidity: document.getElementById("humidity").value,
-        })
-        .then((response) => { })
-        .catch((error) => alert("Try again"));
-    }
-  </script>
-
-  <script>
-    // *** PUT *** //
-    function updateData(idnumber) {
-      var url = "http://localhost:8080/" + idenumber;
-      axios
-        .put(url, {
-          id: document.getElementById("id").value,
-          date: document.getElementById("date").value,
-          time: document.getElementById("time").value,
-          place: {
-            placeName: document.getElementById("placeName").value,
-            lat: document.getElementById("lat").value,
-            lon: document.getElementById("lon").value,
-          },
-          temperature: document.getElementById("temperature").value,
-          humidity: document.getElementById("humidity").value,
-        })
-        .then((response) => { })
-        .catch((error) => alert("Try again"));
-    } 
-  </script>
+  <h1>Weather Station</h1>
+  <p>Id<input id="id" type="text"></p>
+  <p>Date<input id="date" type="text"></p>
+  <p>Time<input id="time" type="text"></p>
+  <p>Name<input id="placename" type="text"></p>
+  <p>Lat<input id="latitude" type="text"></p>
+  <p>Lon<input id="longitude" type="text"></p>
+  <p>Temperature<input id="temperature" type="text"></p>
+  <p>Humidity<input id="humidity" type="text"></p>
+  <input type = "button" onclick = "sendData()" value = "Send Data">
 </body>
 
 </html>
