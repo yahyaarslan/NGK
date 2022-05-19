@@ -73,5 +73,6 @@
         "typeinfo": "cpp",
         "variant": "cpp"
     },
-    "cmake.sourceDirectory": "${workspaceFolder}/fmt"
+    "cmake.sourceDirectory": "${workspaceFolder}/fmt",
+    "C_Cpp.errorSquiggles": "Disabled"
 }

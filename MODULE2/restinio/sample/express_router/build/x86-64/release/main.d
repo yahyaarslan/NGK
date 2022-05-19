@@ -95,4 +95,13 @@ build/x86-64/release/build/x86-64/release/main.o: main.cpp \
  ../../../rapidjson/include/rapidjson/writer.h \
  ../../../rapidjson/include/rapidjson/stringbuffer.h \
  ../../../rapidjson/include/rapidjson/ostreamwrapper.h \
- ../../../rapidjson/include/rapidjson/istreamwrapper.h
+ ../../../rapidjson/include/rapidjson/istreamwrapper.h \
+ ../../restinio/websocket/websocket.hpp \
+ ../../restinio/websocket/message.hpp \
+ ../../restinio/utils/impl/bitops.hpp \
+ ../../restinio/websocket/impl/ws_connection_base.hpp \
+ ../../restinio/websocket/impl/ws_connection.hpp \
+ ../../restinio/websocket/impl/ws_parser.hpp \
+ ../../restinio/websocket/impl/ws_protocol_validator.hpp \
+ ../../restinio/websocket/impl/utf8.hpp ../../restinio/utils/base64.hpp \
+ ../../restinio/utils/base64_lut.ipp ../../restinio/utils/sha1.hpp
