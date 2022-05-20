@@ -71,7 +71,7 @@
       var idNum = document.getElementById("ID").value;
       console.log("Get by ID")
       console.log('http://localhost:8080/' + document.getElementById("ID").value)
-      axios.get('http://localhost:8080/' + idNum)
+      axios.get('http://localhost:8080/' + ID)
         .then(response => {
           setTable(response.data);
         }).catch(error => alert('Try again'));
