@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
   <title>SWNGK WebClient</title>
@@ -51,7 +51,7 @@
           {
             title: "Humidity",
             field: "Humidity",
-          }
+          },
         ],
       });
       $("#table").tabulator("setData", data);
@@ -71,7 +71,7 @@
       var idNum = document.getElementById("ID").value;
       console.log("Get by ID")
       console.log('http://localhost:8080/' + document.getElementById("ID").value)
-      axios.get('http://localhost:8080/' + ID)
+      axios.get('http://localhost:8080/' + idNum)
         .then(response => {
           setTable(response.data);
         }).catch(error => alert('Try again'));
@@ -80,48 +80,8 @@
     // *** POST *** //
     function sendData() {
       console.log("Client - Trying to post.")
-      axios.post("http://localhost:8080", {
-        "ID": (document.getElementById("ID").value),
-        "Date": (document.getElementById("Date").value),
-        "Time": (document.getElementById("Time").value),
-        "Name": (document.getElementById("Name").value),
-        "Lat": (document.getElementById("Lat").value),
-        "Lon": (document.getElementById("Lon").value),
-        "Temperature": (document.getElementById("Temperature").value),
-        "Humidity": (document.getElementById("Humidity").value)
-      })
-        .then((response) => { })
-        .catch((error) => alert("Try again"));
-
-      socket.send('ID: ' + (document.getElementById("ID").value) + ' added.');
-    }
-
-    // *** PUT *** //
-    function updateData(idnumber) {
-      var url = "http://localhost:8080/" + idnumber
-      axios.put(url,
-        {
-          "ID": (document.getElementById("ID").value),
-          "Date": (document.getElementById("Date").value),
-          "Time": (document.getElementById("Time").value),
-          "Name": (document.getElementById("Name").value),
-          "Lat": (document.getElementById("Lat").value),
-          "Lon": (document.getElementById("Lon").value),
-          "Temperature": (document.getElementById("Temperature").value),
-          "Humidity": (document.getElementById("Humidity").value)
-        })
-        .then((response) => { })
-        .catch((error) => alert("Try again"));
-
-      socket.send('ID: ' + (document.getElementById("ID").value) + ' updated.');
-    }
-
-    // Delete data by Id
-    function deleteById(idnumber) {
-      var url = 'http://localhost:8080/' + idnumber
-
-      axios.delete(url,
-        {
+      axios
+        .post("http://localhost:8080", {
           "ID": document.getElementById("ID").value,
           "Date": document.getElementById("Date").value,
           "Time": document.getElementById("Time").value,
@@ -131,34 +91,68 @@
           "Temperature": document.getElementById("Temperature").value,
           "Humidity": document.getElementById("Humidity").value
         })
-        .then(response => {
-        }).catch(error => alert('Try again'));
-
-      socket.send('ID: ' + (document.getElementById("ID").value) + ' deleted.');
+        .then((response) => { })
+        .catch((error) => alert("Try again"));
+      socket.send('ID: ' + (document.getElementById("ID").value) + ' added.');
     }
+
+    // *** PUT *** //
+    function updateData(idnumber) {
+      var url = "http://localhost:8080/" + idnumber;
+      axios
+        .put(url, {
+          "ID": document.getElementById("ID").value,
+          "Date": document.getElementById("Date").value,
+          "Time": document.getElementById("Time").value,
+          "Name": document.getElementById("Name").value,
+          "Lat": document.getElementById("Lat").value,
+          "Lon": document.getElementById("Lon").value,
+          "Temperature": document.getElementById("Temperature").value,
+          "Humidity": document.getElementById("Humidity").value
+        })
+        .then((response) => { })
+        .catch((error) => alert("Try again"));
+      socket.send('ID: ' + (document.getElementById("ID").value) + ' updated');
+    }
+
+    // Delete data by Id
+    function deleteById(idnumber) {
+          var url = 'http://localhost:8080/' + idnumber
+
+          axios.delete(url,
+            {
+              "ID": document.getElementById("ID").value,
+              "Date": document.getElementById("Date").value,
+              "Time": document.getElementById("Time").value,
+              "Name": document.getElementById("Name").value,
+              "Lat": document.getElementById("Lat").value,
+              "Lon": document.getElementById("Lon").value,
+              "Temperature": document.getElementById("Temperature").value,
+              "Humidity": document.getElementById("Humidity").value
+            }
+          )
+            .then(response => {
+            }).catch(error => alert('Try again'));
+          socket.send('ID: ' + (document.getElementById("ID").value) + ' deleted');
+        }
 
     //Note: Route Is chat
     const socket = new WebSocket('ws://localhost:8080/chat');
-
-    //Sending a message to the web socket server...
-    socket.addEventListener('open', function (event) {
-      socket.send('Hello Server!');
-    });
-
-    //Listen for messages
-    socket.addEventListener('message', function (message) {
-      console.log('Message from server', message.data);
-      document.getElementById("update").innerHTML = message.data;
-    });
+      socket.addEventListener('open', function (event) {
+        //Sending a message to the web socket server...
+        socket.send('Hello Server!');
+      });
+      //Listen for messages
+      socket.addEventListener('message', function (message) {
+        console.log('Message from server', message.data);
+        document.getElementById("wsupdate").innerHTML = message.data;
+      });
   </script>
+
 </head>
 
 <body>
   <h1>Weather Station</h1>
-
-  <input type="button" onclick="getData()" value="GetData()">
-
-  <div id="table"> </div>
   <p>ID<input id="ID" type="text"></p>
   <p>Date<input id="Date" type="text"></p>
   <p>Time<input id="Time" type="text"></p>
@@ -167,16 +161,17 @@
   <p>Lon<input id="Lon" type="text"></p>
   <p>Temperature<input id="Temperature" type="text"></p>
   <p>Humidity<input id="Humidity" type="text"></p>
-
   <input type="button" onclick="sendData()" value="Send Data">
 
-  <input type="button" onclick="putData()" value="PutData()">
-  <input type="button" onclick="getDataById()" value="GetDataID()">
-  <input type="button" onclick="deleteById()" value="DeleteByID()">
+  <input type="button" onclick="getData()" value="Hent data">
+  <div id="table"> </div>
 
-  <br>
-  <b>What changed: </b>
-  <i id="update">*changed*</i><br>
+  <input type="button" onclick="putData()" value="PUT by ID">
+  <input type="button" onclick="getDataById()" value="Get by ID ">
+  <input type="button" onClikc="deleteById()" value="Delete by ID">
+
+  <b>Action: </b>
+  <i id="wsupdate">*changes*</i><br>
 
 </body>
 

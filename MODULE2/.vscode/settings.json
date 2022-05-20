@@ -71,7 +71,8 @@
         "cinttypes": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "ranges": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/fmt",
     "C_Cpp.errorSquiggles": "Disabled",

@@ -301,7 +301,7 @@ private:
   // message);
   // 	}
   // };
- 
+
   template <typename RESP> static RESP init_resp(RESP resp)
   {
     resp.append_header("Server", "RESTinio sample server /v.0.6")
