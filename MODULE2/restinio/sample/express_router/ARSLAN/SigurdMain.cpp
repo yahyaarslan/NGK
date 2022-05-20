@@ -4,7 +4,7 @@
 #include <restinio/all.hpp>
 #include <restinio/websocket/websocket.hpp>
 
-namespace rr   = restinio::router;
+namespace rr = restinio::router;
 using router_t = rr::express_router_t<>;
 
 namespace rws = restinio::websocket::basic;
@@ -20,22 +20,25 @@ using traits_t =
 struct place_t
 {
   place_t() = default;
-  place_t(std::string placename, double lat, double lon)
+  place_t(std::string placename,
+          double lat,
+          double lon)
       : m_placename{std::move(placename)},
         m_lat{std::move(lat)},
         m_lon{std::move(lon)}
   {
   }
 
-  template <typename Json_Io> void json_io(Json_Io &io)
+  template <typename Json_Io>
+  void json_io(Json_Io &io)
   {
     io &json_dto::mandatory("placename", m_placename) &
         json_dto::mandatory("lat", m_lat) & json_dto::mandatory("lon", m_lon);
   }
 
   std::string m_placename;
-  double      m_lat;
-  double      m_lon;
+  double m_lat;
+  double m_lon;
 };
 
 // LAB 1
@@ -48,7 +51,8 @@ struct timeDate_t
   {
   }
 
-  template <typename Json_Io> void json_io(Json_Io &io)
+  template <typename Json_Io>
+  void json_io(Json_Io &io)
   {
     io &json_dto::mandatory("date", m_date) &
         json_dto::mandatory("time", m_time);
@@ -73,7 +77,8 @@ struct weatherstation_t
   {
   }
 
-  template <typename Json_Io> void json_io(Json_Io &io)
+  template <typename Json_Io>
+  void json_io(Json_Io &io)
   {
     io &json_dto::mandatory("id", m_id) &
         json_dto::mandatory("dateandtime", m_dateTime) &
@@ -82,9 +87,9 @@ struct weatherstation_t
         json_dto::mandatory("humidity", m_humidity);
   }
 
-  int         m_id;
-  timeDate_t  m_dateTime;
-  place_t     m_place;
+  int m_id;
+  timeDate_t m_dateTime;
+  place_t m_place;
   std::string m_temperature;
   std::string m_humidity;
 };
@@ -99,7 +104,7 @@ public:
   }
 
   weather_handler_t(const weather_handler_t &) = delete;
-  weather_handler_t(weather_handler_t &&)      = delete;
+  weather_handler_t(weather_handler_t &&) = delete;
 
   // LAB 1
   auto on_weather_list(const restinio::request_handle_t &req,
@@ -113,10 +118,10 @@ public:
   }
 
   auto on_date_get(const restinio::request_handle_t &req,
-                   rr::route_params_t                params)
+                   rr::route_params_t params)
   {
-    int        counter = 0;
-    const auto date    = restinio::cast_to<std::uint32_t>(params["date"]);
+    int counter = 0;
+    const auto date = restinio::cast_to<std::uint32_t>(params["date"]);
 
     auto resp = init_resp(req->create_response());
     for (std::size_t i = 0; i < m_weather.size(); ++i)
@@ -139,7 +144,7 @@ public:
   }
 
   auto on_weather_latest(const restinio::request_handle_t &req,
-                         rr::route_params_t                params)
+                         rr::route_params_t params)
   {
     auto resp = init_resp(req->create_response());
     try
@@ -185,8 +190,9 @@ public:
     return resp.done();
   }
 
+// tager idekset og ikke ID'et btw...
   auto on_weather_update(const restinio::request_handle_t &req,
-                         rr::route_params_t                params)
+                         rr::route_params_t params)
   {
     const auto id = restinio::cast_to<std::uint32_t>(params["id"]);
 
@@ -215,7 +221,7 @@ public:
   }
 
   auto on_live_update(const restinio::request_handle_t &req,
-                      rr::route_params_t                params)
+                      rr::route_params_t params)
   {
     if (restinio::http_connection_header_t::upgrade ==
         req->header().connection())
@@ -252,7 +258,7 @@ public:
   }
 
   auto on_weather_delete(const restinio::request_handle_t &req,
-                         rr::route_params_t                params)
+                         rr::route_params_t params)
   {
     auto resp = init_resp(req->create_response());
 
@@ -280,7 +286,7 @@ public:
   auto options(restinio::request_handle_t req, restinio::router::route_params_t)
   {
     const auto methods = "OPTIONS, GET, POST, PUT, PATCH, DELETE, PUT";
-    auto       resp    = init_resp(req->create_response());
+    auto resp = init_resp(req->create_response());
     resp.append_header(restinio::http_field::access_control_allow_methods,
                        methods);
     resp.append_header(restinio::http_field::access_control_allow_headers,
@@ -291,7 +297,7 @@ public:
 
 private:
   weather_collection_t &m_weather;
-  ws_registry_t         m_registry;
+  ws_registry_t m_registry;
 
   // void sendMessage(std::string message)
   // {
@@ -302,7 +308,12 @@ private:
   // 	}
   // };
 
+<<<<<<< HEAD
   template <typename RESP> static RESP init_resp(RESP resp)
+=======
+  template <typename RESP>
+  static RESP init_resp(RESP resp)
+>>>>>>> 159fe0d6c65a0daeef06e50357eed6da111a0e8a
   {
     resp.append_header("Server", "RESTinio sample server /v.0.6")
         .append_header_date_field()
@@ -312,7 +323,8 @@ private:
     return resp;
   }
 
-  template <typename RESP> static void mark_as_bad_request(RESP &resp)
+  template <typename RESP>
+  static void mark_as_bad_request(RESP &resp)
   {
     resp.header().status_line(restinio::status_bad_request());
   }
