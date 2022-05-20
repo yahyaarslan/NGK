@@ -1,12 +1,52 @@
 build/x86-64/release/build/x86-64/release/main.o: main.cpp \
+ ../../../fmt/include/fmt/format.h ../../../fmt/include/fmt/core.h \
+ ../../../json_dto/dev/json_dto/pub.hpp \
+ ../../../rapidjson/include/rapidjson/document.h \
+ ../../../rapidjson/include/rapidjson/reader.h \
+ ../../../rapidjson/include/rapidjson/allocators.h \
+ ../../../rapidjson/include/rapidjson/rapidjson.h \
+ ../../../rapidjson/include/rapidjson/internal/meta.h \
+ ../../../rapidjson/include/rapidjson/internal/../rapidjson.h \
+ ../../../rapidjson/include/rapidjson/stream.h \
+ ../../../rapidjson/include/rapidjson/encodings.h \
+ ../../../rapidjson/include/rapidjson/encodedstream.h \
+ ../../../rapidjson/include/rapidjson/memorystream.h \
+ ../../../rapidjson/include/rapidjson/internal/clzll.h \
+ ../../../rapidjson/include/rapidjson/internal/stack.h \
+ ../../../rapidjson/include/rapidjson/internal/../allocators.h \
+ ../../../rapidjson/include/rapidjson/internal/swap.h \
+ ../../../rapidjson/include/rapidjson/internal/strtod.h \
+ ../../../rapidjson/include/rapidjson/internal/ieee754.h \
+ ../../../rapidjson/include/rapidjson/internal/biginteger.h \
+ ../../../rapidjson/include/rapidjson/internal/diyfp.h \
+ ../../../rapidjson/include/rapidjson/internal/clzll.h \
+ ../../../rapidjson/include/rapidjson/internal/pow10.h \
+ ../../../rapidjson/include/rapidjson/error/error.h \
+ ../../../rapidjson/include/rapidjson/error/../rapidjson.h \
+ ../../../rapidjson/include/rapidjson/internal/strfunc.h \
+ ../../../rapidjson/include/rapidjson/internal/../stream.h \
+ ../../../rapidjson/include/rapidjson/internal/../rapidjson.h \
+ ../../../rapidjson/include/rapidjson/error/error.h \
+ ../../../rapidjson/include/rapidjson/error/en.h \
+ ../../../rapidjson/include/rapidjson/error/error.h \
+ ../../../rapidjson/include/rapidjson/writer.h \
+ ../../../rapidjson/include/rapidjson/internal/dtoa.h \
+ ../../../rapidjson/include/rapidjson/internal/itoa.h \
+ ../../../rapidjson/include/rapidjson/internal/itoa.h \
+ ../../../rapidjson/include/rapidjson/stringbuffer.h \
+ ../../../rapidjson/include/rapidjson/prettywriter.h \
+ ../../../rapidjson/include/rapidjson/writer.h \
+ ../../../rapidjson/include/rapidjson/stringbuffer.h \
+ ../../../rapidjson/include/rapidjson/ostreamwrapper.h \
+ ../../../rapidjson/include/rapidjson/istreamwrapper.h \
  ../../restinio/all.hpp ../../restinio/version.hpp \
  ../../restinio/asio_include.hpp ../../restinio/settings.hpp \
  ../../restinio/exception.hpp ../../restinio/string_view.hpp \
  ../../restinio/third_party/string-view-lite/string_view.hpp \
  ../../restinio/request_handler.hpp ../../restinio/http_headers.hpp \
- ../../restinio/impl/include_fmtlib.hpp ../../../fmt/include/fmt/format.h \
- ../../../fmt/include/fmt/core.h ../../../fmt/include/fmt/ostream.h \
- ../../../fmt/include/fmt/format.h ../../../fmt/include/fmt/chrono.h \
+ ../../restinio/impl/include_fmtlib.hpp \
+ ../../../fmt/include/fmt/ostream.h ../../../fmt/include/fmt/format.h \
+ ../../../fmt/include/fmt/chrono.h \
  ../../restinio/impl/string_caseless_compare.hpp \
  ../../restinio/impl/to_lower_lut.hpp \
  ../../restinio/compiler_features.hpp ../../restinio/optional.hpp \
@@ -57,45 +97,6 @@ build/x86-64/release/build/x86-64/release/main.o: main.cpp \
  ../../restinio/path2regex/path2regex.hpp \
  ../../restinio/router/std_regex_engine.hpp \
  ../../restinio/router/method_matcher.hpp \
- ../../../json_dto/dev/json_dto/pub.hpp \
- ../../../rapidjson/include/rapidjson/document.h \
- ../../../rapidjson/include/rapidjson/reader.h \
- ../../../rapidjson/include/rapidjson/allocators.h \
- ../../../rapidjson/include/rapidjson/rapidjson.h \
- ../../../rapidjson/include/rapidjson/internal/meta.h \
- ../../../rapidjson/include/rapidjson/internal/../rapidjson.h \
- ../../../rapidjson/include/rapidjson/stream.h \
- ../../../rapidjson/include/rapidjson/encodings.h \
- ../../../rapidjson/include/rapidjson/encodedstream.h \
- ../../../rapidjson/include/rapidjson/memorystream.h \
- ../../../rapidjson/include/rapidjson/internal/clzll.h \
- ../../../rapidjson/include/rapidjson/internal/stack.h \
- ../../../rapidjson/include/rapidjson/internal/../allocators.h \
- ../../../rapidjson/include/rapidjson/internal/swap.h \
- ../../../rapidjson/include/rapidjson/internal/strtod.h \
- ../../../rapidjson/include/rapidjson/internal/ieee754.h \
- ../../../rapidjson/include/rapidjson/internal/biginteger.h \
- ../../../rapidjson/include/rapidjson/internal/diyfp.h \
- ../../../rapidjson/include/rapidjson/internal/clzll.h \
- ../../../rapidjson/include/rapidjson/internal/pow10.h \
- ../../../rapidjson/include/rapidjson/error/error.h \
- ../../../rapidjson/include/rapidjson/error/../rapidjson.h \
- ../../../rapidjson/include/rapidjson/internal/strfunc.h \
- ../../../rapidjson/include/rapidjson/internal/../stream.h \
- ../../../rapidjson/include/rapidjson/internal/../rapidjson.h \
- ../../../rapidjson/include/rapidjson/error/error.h \
- ../../../rapidjson/include/rapidjson/error/en.h \
- ../../../rapidjson/include/rapidjson/error/error.h \
- ../../../rapidjson/include/rapidjson/writer.h \
- ../../../rapidjson/include/rapidjson/internal/dtoa.h \
- ../../../rapidjson/include/rapidjson/internal/itoa.h \
- ../../../rapidjson/include/rapidjson/internal/itoa.h \
- ../../../rapidjson/include/rapidjson/stringbuffer.h \
- ../../../rapidjson/include/rapidjson/prettywriter.h \
- ../../../rapidjson/include/rapidjson/writer.h \
- ../../../rapidjson/include/rapidjson/stringbuffer.h \
- ../../../rapidjson/include/rapidjson/ostreamwrapper.h \
- ../../../rapidjson/include/rapidjson/istreamwrapper.h \
  ../../restinio/websocket/websocket.hpp \
  ../../restinio/websocket/message.hpp \
  ../../restinio/utils/impl/bitops.hpp \

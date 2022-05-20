@@ -1,20 +1,8 @@
-#include <fmt/format.h>
 #include <iostream>
-#include <json_dto/pub.hpp>
+
 #include <restinio/all.hpp>
-#include <restinio/websocket/websocket.hpp>
 
-namespace rr   = restinio::router;
-using router_t = rr::express_router_t<>;
-
-namespace rws = restinio::websocket::basic;
-
-using traits_t =
-    restinio::traits_t<restinio::asio_timer_manager_t,
-                       restinio::single_threaded_ostream_logger_t, router_t>;
-
-using ws_registry_t = std::map<std::uint64_t, rws::ws_handle_t>;
-
+#include <json_dto/pub.hpp>
 
 struct weather_t
 {
@@ -56,6 +44,9 @@ struct weather_t
 
 using weather_collection_t = std::vector<weather_t>;
 
+namespace rr   = restinio::router;
+using router_t = rr::express_router_t<>;
+
 class weathers_handler_t
 {
 public:
@@ -92,40 +83,6 @@ public:
     }
 
     return resp.done();
-  }
-
-  auto on_live_update(const restinio::request_handle_t &req,
-                      rr::route_params_t params) // Websocket handler
-  {
-    if (restinio::http_connection_header_t::upgrade ==
-        req->header().connection())
-    {
-      auto wsh = rws::upgrade<traits_t>(
-          *req, rws::activation_t::immediate,
-          [this](auto wsh, auto m)
-          {
-            if (rws::opcode_t::text_frame == m->opcode() ||
-                rws::opcode_t::binary_frame == m->opcode() ||
-                rws::opcode_t::continuation_frame == m->opcode())
-            {
-              wsh->send_message(*m);
-            }
-            else if (rws::opcode_t::ping_frame == m->opcode())
-            {
-              auto resp = *m;
-              resp.set_opcode(rws::opcode_t::pong_frame);
-              wsh->send_message(resp);
-            }
-            else if (rws::opcode_t::connection_close_frame == m->opcode())
-            {
-              m_registry.erase(wsh->connection_id());
-            }
-          });
-      m_registry.emplace(wsh->connection_id(), wsh);
-      init_resp(req->create_response()).done();
-      return restinio::request_accepted();
-    }
-    return restinio::request_rejected();
   }
 
   auto on_weather_get(const restinio::request_handle_t &req,
@@ -258,10 +215,6 @@ public:
     try
     {
       m_weathers.emplace_back(json_dto::from_json<weather_t>(req->body()));
-
-      // ***
-      sendMessage("POST: id =" +
-                  json_dto::from_json<weather_t>(req->body()).m_ID);
     }
     catch (const std::exception & /*ex*/)
     {
@@ -325,39 +278,16 @@ public:
     return resp.done();
   }
 
-  
-  auto options(restinio::request_handle_t req, restinio::router::route_params_t)
-  {
-    const auto methods = "OPTIONS, GET, POST, PATCH, DELETE, PUT";
-    auto       resp    = init_resp(req->create_response());
-    resp.append_header(restinio::http_field::access_control_allow_methods,
-                       methods);
-    resp.append_header(restinio::http_field::access_control_allow_headers,
-                       "contrent-type");
-    resp.append_header(restinio::http_field::access_control_max_age, "86400");
-    return resp.done();
-  }
-
 private:
   weather_collection_t &m_weathers;
-  ws_registry_t m_registry;
 
   template <typename RESP> static RESP init_resp(RESP resp)
-  // init_resp(RESP resp)
   {
     resp.append_header("Server", "RESTinio sample server /v.0.6")
         .append_header_date_field()
-        .append_header("Content-Type", "text/plain; charset=utf-8")
-        .append_header(restinio::http_field::access_control_allow_origin, "*");
+        .append_header("Content-Type", "text/plain; charset=utf-8");
 
     return resp;
-  }
-
-
-  void sendMessage(std::string message)
-  {
-    for (auto [k, v] : m_registry)
-      v->send_message(rws::final_frame, rws::opcode_t::text_frame, message);
   }
 
   template <typename RESP> static void mark_as_bad_request(RESP &resp)
@@ -385,27 +315,18 @@ auto server_handler(weather_collection_t &weather_collection)
         .done();
   };
 
-  // ***
   // Handlers for '/' path.
   router->http_get("/", by(&weathers_handler_t::on_weathers_list));
   router->http_get("/three",
                    by(&weathers_handler_t::on_weathers_get_threelist));
-  //router->http_get("/Date/:Date", by(&weathers_handler_t::on_weather_get_date));
-  router->add_handler(restinio::http_method_options(), "/date/:date",
-                      by(&weathers_handler_t::options));
+  router->http_get("/Date/:Date", by(&weathers_handler_t::on_weather_get_date));
   router->http_post("/", by(&weathers_handler_t::on_new_weather));
   router->http_put("/", by(&weathers_handler_t::on_weather_update));
-  router->http_get("/chat", by(&weathers_handler_t::on_live_update));
-
-  // Binding a url to the new options handler
-  router->add_handler(restinio::http_method_options(), "/",
-                      by(&weathers_handler_t::options));
 
   // Disable all other methods for '/'.
   router->add_handler(
       restinio::router::none_of_methods(restinio::http_method_get(),
-                                        restinio::http_method_post(),
-                                        restinio::http_method_options()),
+                                        restinio::http_method_post()),
       "/", method_not_allowed);
 
   // Handler for '/ID/:ID' path.
@@ -419,6 +340,9 @@ auto server_handler(weather_collection_t &weather_collection)
   // Handlers for '/:weathernum' path.
   router->http_get(R"(/:weathernum(\d+))",
                    by(&weathers_handler_t::on_weather_get));
+  router->http_get(R"(/:weathernum(\d+))",
+                   by(&weathers_handler_t::on_weathers_get_threelist));
+
   router->http_put(R"(/:weathernum(\d+))",
                    by(&weathers_handler_t::on_weather_update));
   router->http_delete(R"(/:weathernum(\d+))",
@@ -431,10 +355,6 @@ auto server_handler(weather_collection_t &weather_collection)
                                         restinio::http_method_delete()),
       R"(/:weathernum(\d+))", method_not_allowed);
 
-  // ***
-  // CORS for DEL3: GET by Id, PUT by Id from client to server
-  router->add_handler(restinio::http_method_options(), R"(/:weatherid(\d+))",
-                      by(&weathers_handler_t::options));
   return router;
 }
 

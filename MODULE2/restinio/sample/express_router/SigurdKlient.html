@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/js/tabulator.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/css/tabulator.min.css">
+    </link>
+    <meta charset="UTF-8">
+
+    <script type="text/javascript">
+
+        getData();
+        //Table set up
+        function setTable(data) {
+            $("#table").tabulator({
+                layout: "fitDataFill",
+                height: "311px",
+                columns: [
+                    {
+                        title: "Id",
+                        field: "id"
+                    },
+                    {
+                        title: "Date",
+                        field: "dateandtime.date"
+                    },
+                    {
+                        title: "Time",
+                        field: "dateandtime.time"
+                    },
+                    {
+                        title: "Place",
+                        field: "place.placename"
+                    },
+                    {
+                        title: "Lat",
+                        field: "place.lat"
+                    },
+                    {
+                        title: "Lon",
+                        field: "place.lon"
+                    },
+                    {
+                        title: "Temperature",
+                        field: "temperature"
+                    },
+                    {
+                        title: "Humidity",
+                        field: "humidity"
+                    }
+                ],
+            });
+            $("#table").tabulator("setData", data);
+        }
+
+        function getData() {
+            axios.get('http://localhost:8080')
+                .then(response => {
+                    setTable(response.data);
+                }).catch(error => alert('Try again'));
+
+        }
+
+        function sendData() {
+            console.log("here try to post.....")
+            axios.post('http://localhost:8080',
+                {
+                    "id": (document.getElementById("id").valueAsNumber),
+                    "dateandtime": {
+                        "date": (document.getElementById("date").value),
+                        "time": (document.getElementById("time").value)
+                    },
+                    "place": {
+                        "placename": document.getElementById("placename").value,
+                        "lat": document.getElementById("lat").valueAsNumber,
+                        "lon": document.getElementById("lon").valueAsNumber
+                    },
+                    "temperature": (document.getElementById("temperature").value),
+                    "humidity": (document.getElementById("humidity").value)
+                })
+                .then(response => {
+                }).catch(error => alert('Try again'));
+
+            socket.send('id: ' + (document.getElementById("id").valueAsNumber) + ' added');
+        }
+
+        function updateData(idnumber) {
+            var url = 'http://localhost:8080/' + idnumber
+
+            axios.put(url,
+                {
+                    "id": (document.getElementById("id").valueAsNumber),
+                    "dateandtime": {
+                        "date": (document.getElementById("date").value),
+                        "time": (document.getElementById("time").value)
+                    },
+                    "place": {
+                        "placename": document.getElementById("placename").value,
+                        "lat": document.getElementById("lat").valueAsNumber,
+                        "lon": document.getElementById("lon").valueAsNumber
+                    },
+                    "temperature": (document.getElementById("temperature").value),
+                    "humidity": (document.getElementById("humidity").value)
+                }
+            )
+                .then(response => {
+                }).catch(error => alert('Try again'));
+            socket.send('id: ' + (document.getElementById("id").valueAsNumber) + ' updated');
+        }
+
+
+        function deleteData(idnumber) {
+            var url = 'http://localhost:8080/' + idnumber
+
+            axios.delete(url,
+                {
+                    "id": (document.getElementById("id").valueAsNumber),
+                    "dateandtime": {
+                        "date": (document.getElementById("date").value),
+                        "time": (document.getElementById("time").value)
+                    },
+                    "place": {
+                        "placename": document.getElementById("placename").value,
+                        "lat": document.getElementById("lat").valueAsNumber,
+                        "lon": document.getElementById("lon").valueAsNumber
+                    },
+                    "temperature": (document.getElementById("temperature").value),
+                    "humidity": (document.getElementById("humidity").value)
+                }
+            )
+                .then(response => {
+                }).catch(error => alert('Try again'));
+            socket.send('id: ' + (document.getElementById("id").valueAsNumber) + ' deleted');
+        }
+
+
+
+        //Websocket
+        const socket = new WebSocket('ws://localhost:8080/chat');
+
+        socket.addEventListener('open', function (event) {
+            socket.send('Hello Server');
+        });
+
+        socket.addEventListener('message', function (message) {
+            console.log('message from server', message.data);
+            document.getElementById("update").innerHTML = message.data;
+        });
+    </script>
+</head>
+
+<body>
+    <p>Weatherstation NGK</p>
+    <input type="button" onclick="getData()" value="Hent data">
+    <div id="table"> </div>
+    <p>Send data</p>
+    <p>Id<input id="id" type="number"></p>
+    <p>Date<input id="date" type="text"></p>
+    <p>Time<input id="time" type="text"></p>
+    <p>Placename<input id="placename" type="text"></p>
+    <p>Lat<input id="lat" type="number"></p>
+    <p>Lon<input id="lon" type="number"></p>
+    <p>Temperature<input id="temperature" type="text"></p>
+    <p>Humidity<input id="humidity" type="text"></p>
+
+
+
+    <input type="button" onclick="sendData()" value="Send Data"><br>
+
+    <p>What ID do you want to change?<input id="lognr" type="number"></p>
+    <input type="button" onclick="updateData(document.getElementById('lognr').valueAsNumber)" value="Update data">
+    <input type="button" onclick="deleteData(document.getElementById('lognr').valueAsNumber)" value="Delete data">
+
+
+    <br>
+    <b>What changed: </b>
+    <i id="update">*changed*</i><br>
+
+    <div id="table">
+</body>
+
+</html>

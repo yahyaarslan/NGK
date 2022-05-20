@@ -9,25 +9,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/js/tabulator.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/css/tabulator.min.css">
   </link>
+  <meta charset="UTF-8">
 
   <script type="text/javascript">
-    // *** LISTENER *** //
-    // NOTE: ROUTE IS CHAT
-    const socket = new WebSocket('ws://localhost:8080/chat');
-    // Connection opened
-    socket.addEventListener('open', function (event) {
-      // Sending a message to the web socket server...
-      socket.send('Updates coming here');
-    });
-    // Listen for messages
-    socket.addEventListener('message', function (message) {
-      console.log('Message from server ', message.data);
-      getData();
-      document.getElementById("liveupdate").innerText = message.data;
-    });
-  </script>
 
-  <script>
+    getData();
     // *** TABLE *** //
     function setTable(data) {
       $("#table").tabulator({
@@ -70,21 +56,16 @@
       });
       $("#table").tabulator("setData", data);
     }
-  </script>
 
-  <script>
     function getData() {
       // *** GET *** //
       axios
         .get("http://localhost:8080")
         .then((response) => {
           setTable(response.data);
-        })
-        .catch((error) => alert("Try again"));
+        }).catch((error) => alert("Try again"));
     }
-  </script>
 
-  <script>
     //Get data by Id
     function getDataById(ID) {
       var idNum = document.getElementById("ID").value;
@@ -95,58 +76,77 @@
           setTable(response.data);
         }).catch(error => alert('Try again'));
     }
-  </script>
 
-  <script>
     // *** POST *** //
     function sendData() {
+      console.log("Client - Trying to post.")
       axios
         .post("http://localhost:8080", {
-          ID: document.getElementById("ID").value,
-          Date: document.getElementById("Date").value,
-          Time: document.getElementById("Time").value,
-          Name: document.getElementById("Name").value,
-          Lat: document.getElementById("Lat").value,
-          Lon: document.getElementById("Lon").value,
-          Temperature: document.getElementById("Temperature").value,
-          Humidity: document.getElementById("Humidity").value,
+          "ID": document.getElementById("ID").value,
+          "Date": document.getElementById("Date").value,
+          "Time": document.getElementById("Time").value,
+          "Name": document.getElementById("Name").value,
+          "Lat": document.getElementById("Lat").value,
+          "Lon": document.getElementById("Lon").value,
+          "Temperature": document.getElementById("Temperature").value,
+          "Humidity": document.getElementById("Humidity").value
         })
         .then((response) => { })
         .catch((error) => alert("Try again"));
+      socket.send('ID: ' + (document.getElementById("ID").value) + ' added.');
     }
-  </script>
 
-  <script>
     // *** PUT *** //
     function updateData(idnumber) {
-      var url = "http://localhost:8080/" + idenumber;
+      var url = "http://localhost:8080/" + idnumber;
       axios
         .put(url, {
-          ID: document.getElementById("ID").value,
-          Date: document.getElementById("Date").value,
-          Time: document.getElementById("Time").value,
-          Name: document.getElementById("Name").value,
-          Lat: document.getElementById("Lat").value,
-          Lon: document.getElementById("Lon").value,
-          Temperature: document.getElementById("Temperature").value,
-          Humidity: document.getElementById("Humidity").value,
+          "ID": document.getElementById("ID").value,
+          "Date": document.getElementById("Date").value,
+          "Time": document.getElementById("Time").value,
+          "Name": document.getElementById("Name").value,
+          "Lat": document.getElementById("Lat").value,
+          "Lon": document.getElementById("Lon").value,
+          "Temperature": document.getElementById("Temperature").value,
+          "Humidity": document.getElementById("Humidity").value
         })
         .then((response) => { })
         .catch((error) => alert("Try again"));
-    } 
-  </script>
-
-  <script>
-    // Delete data by Id
-    function deleteById(ID) {
-      var idNum = document.getElementById("ID").value;
-      console.log("Get by ID")
-      console.log('http://localhost:8080/' + document.getElementById("ID").value)
-      axios.delete('http://localhost:8080/' + idNum)
-        .then(response => {
-          setTable(response.data);
-        }).catch(error => alert('Try again'));
+      socket.send('ID: ' + (document.getElementById("ID").value) + ' updated');
     }
+
+    // Delete data by Id
+    function deleteById(idnumber) {
+          var url = 'http://localhost:8080/' + idnumber
+
+          axios.delete(url,
+            {
+              "ID": document.getElementById("ID").value,
+              "Date": document.getElementById("Date").value,
+              "Time": document.getElementById("Time").value,
+              "Name": document.getElementById("Name").value,
+              "Lat": document.getElementById("Lat").value,
+              "Lon": document.getElementById("Lon").value,
+              "Temperature": document.getElementById("Temperature").value,
+              "Humidity": document.getElementById("Humidity").value
+            }
+          )
+            .then(response => {
+            }).catch(error => alert('Try again'));
+          socket.send('ID: ' + (document.getElementById("ID").value) + ' deleted');
+        }
+
+    //Note: Route Is chat
+    const socket = new WebSocket('ws://localhost:8080/chat');
+      socket.addEventListener('open', function (event) {
+        //Sending a message to the web socket server...
+        socket.send('Hello Server!');
+      });
+      //Listen for messages
+      socket.addEventListener('message', function (message) {
+        console.log('Message from server', message.data);
+        document.getElementById("wsupdate").innerHTML = message.data;
+      });
   </script>
 
 </head>
@@ -171,7 +171,8 @@
   <input type="button" onClikc="deleteById()" value="Delete by ID">
 
   <b>Action: </b>
-  <i id="liveupdate">*changes*</i><br>
+  <i id="wsupdate">*changes*</i><br>
+
 </body>
 
 </html>
